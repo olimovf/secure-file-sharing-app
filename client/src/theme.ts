@@ -1,8 +1,9 @@
 // MUI theme settings
+import { PaletteMode } from '@mui/material';
 const fontSize = 16;
 const fontFamily = ['Roboto', 'sans-serif'].join(',');
 
-export const themeSettings = (mode: 'light' | 'dark') => {
+export const themeSettings = (mode: PaletteMode) => {
 	return {
 		palette: {
 			mode,

@@ -26,7 +26,7 @@ const login = asyncHandler(async (req, res) => {
 	const accessToken = jwt.sign(
 		{
 			UserInfo: {
-				email: foundUser.email,
+				id: foundUser._id,
 				roles: foundUser.roles,
 			},
 		},
@@ -45,7 +45,7 @@ const login = asyncHandler(async (req, res) => {
 		httpOnly: true, //accessible only by web server
 		secure: true, //https
 		sameSite: 'None', //cross-site cookie
-		maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+		maxAge: 1 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
 	});
 
 	// Send accessToken containing email and roles
@@ -69,7 +69,7 @@ const refresh = (req, res) => {
 			if (err) return res.status(403).json({ message: 'Forbidden' });
 
 			const foundUser = await User.findOne({
-				username: decoded.username,
+				email: decoded.email,
 			}).exec();
 
 			if (!foundUser) return res.status(401).json({ message: 'Unauthorized' });
@@ -77,7 +77,7 @@ const refresh = (req, res) => {
 			const accessToken = jwt.sign(
 				{
 					UserInfo: {
-						username: foundUser.username,
+						id: foundUser._id,
 						roles: foundUser.roles,
 					},
 				},

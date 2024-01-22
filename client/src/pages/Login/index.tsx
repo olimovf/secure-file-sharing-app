@@ -1,12 +1,25 @@
 import { Button, Grid, TextField, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FormWrapper } from '../Signup/style';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import GlobalContainer from '../../components/GlobalContainer';
+import { useLoginMutation } from '../../features/auth/authApiSlice';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../features/auth/authSlice';
 
 const Login = () => {
-	const handleSubmit = (e: FormEvent) => {
+	const [login, { isLoading }] = useLoginMutation();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const [email, setEmail] = useState<string>('');
+	const [password, setPassword] = useState<string>('');
+
+	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+
+		const { accessToken } = await login({ email, password }).unwrap();
+		dispatch(setCredentials({ accessToken }));
+		navigate('/dashboard');
 	};
 
 	return (
@@ -15,13 +28,22 @@ const Login = () => {
 				<Typography variant='h4' textAlign='center' mb={2}>
 					Login
 				</Typography>
+
 				{/* <Typography variant='body2' textAlign='center' color='error' mb={2}>
-			Something went wrong
-		</Typography> */}
+					{error!.data!.message}
+				</Typography> */}
+
 				<form onSubmit={handleSubmit}>
 					<Grid container spacing={2}>
 						<Grid item xs={12}>
-							<TextField label='Email' type='email' name='email' fullWidth />
+							<TextField
+								label='Email'
+								type='email'
+								name='email'
+								fullWidth
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+							/>
 						</Grid>
 						<Grid item xs={12}>
 							<TextField
@@ -29,6 +51,8 @@ const Login = () => {
 								type='password'
 								name='password'
 								fullWidth
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -37,8 +61,9 @@ const Login = () => {
 								variant='contained'
 								color='primary'
 								fullWidth
+								disabled={isLoading}
 							>
-								Login
+								{isLoading ? 'Logging in...' : 'Login'}
 							</Button>
 						</Grid>
 					</Grid>

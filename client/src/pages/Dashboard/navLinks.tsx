@@ -4,7 +4,7 @@ import FolderIcon from '@mui/icons-material/FolderOutlined';
 import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+// import NotificationsIcon from '@mui/icons-material/Notifications';
 // import SearchIcon from '@mui/icons-material/Search';
 // import HelpIcon from '@mui/icons-material/Help';
 import CoronavirusIcon from '@mui/icons-material/Coronavirus';

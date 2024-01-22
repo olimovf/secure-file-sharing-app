@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { navLinks } from './navLinks';
 import { Link, Outlet } from 'react-router-dom';
+import Avatar from '../../components/Avatar';
 
 const Dashboard = () => {
 	const [open, setOpen] = useState(true);
@@ -42,19 +43,26 @@ const Dashboard = () => {
 	return (
 		<Box sx={{ display: 'flex' }}>
 			<AppBar position='fixed' open={open}>
-				<Toolbar>
+				<Toolbar
+					sx={{
+						display: 'flex',
+						justifyContent: open ? 'flex-end' : 'space-between',
+						alignItems: 'center',
+					}}
+				>
 					<IconButton
 						color='inherit'
 						aria-label='open drawer'
 						onClick={handleDrawerOpen}
 						edge='start'
 						sx={{
-							marginRight: 5,
+							mr: 5,
 							...(open && { display: 'none' }),
 						}}
 					>
 						<MenuIcon />
 					</IconButton>
+					<Avatar />
 				</Toolbar>
 			</AppBar>
 			<Drawer variant='permanent' open={open}>

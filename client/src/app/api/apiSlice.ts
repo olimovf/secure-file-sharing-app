@@ -1,4 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+	createApi,
+	fetchBaseQuery,
+	BaseQueryFn,
+	FetchBaseQueryError,
+	FetchArgs,
+} from '@reduxjs/toolkit/query/react';
 import { setCredentials } from '../../features/auth/authSlice';
 
 interface AuthState {
@@ -14,15 +20,17 @@ const baseQuery = fetchBaseQuery({
 		if (token) {
 			headers.set('authorization', `Bearer ${token}`);
 		}
+
 		return headers;
 	},
 });
 
-const baseQueryWithReauth = async (args, api, extraOptions) => {
-	// console.log(args) // request url, method, body
-	// console.log(api) // signal, dispatch, getState()
-	// console.log(extraOptions) //custom like {shout: true}
-
+const baseQueryWithReauth: BaseQueryFn<
+	FetchArgs, // Args
+	unknown, // Result
+	FetchBaseQueryError, // Error
+	{ shout?: boolean } // DefinitionExtraOptions
+> = async (args, api, extraOptions) => {
 	let result = await baseQuery(args, api, extraOptions);
 
 	// If you want, handle other status codes, too
@@ -44,7 +52,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 			result = await baseQuery(args, api, extraOptions);
 		} else {
 			if (refreshResult?.error?.status === 403) {
-				refreshResult.error.data = 'Your login has expired.';
+				refreshResult.error.data = 'Your login has expired';
 			}
 			return refreshResult;
 		}

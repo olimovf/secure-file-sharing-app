@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import {
 	Card,
-	CardContent,
-	CardMedia,
 	IconButton,
 	Menu,
 	MenuItem,
@@ -15,6 +13,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { StyledCardContent, StyledCardMedia } from './style';
 
 type FolderProps = {
 	name: string;
@@ -33,24 +32,13 @@ const Folder = ({ name, size }: FolderProps) => {
 	};
 
 	const handleAction = (action: string) => {
-		// Implement action logic here
 		console.log(`Performing action: ${action}`);
 		handleClose();
 	};
 
 	return (
 		<Card sx={{ p: 1.5 }}>
-			<CardMedia
-				component='div'
-				sx={{
-					height: 140,
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					position: 'relative',
-					cursor: 'pointer',
-				}}
-			>
+			<StyledCardMedia>
 				<FolderIcon sx={{ fontSize: 96 }} color='primary' />
 				<IconButton
 					aria-label='folder-actions'
@@ -61,22 +49,15 @@ const Folder = ({ name, size }: FolderProps) => {
 				>
 					<MoreVertIcon />
 				</IconButton>
-			</CardMedia>
-			<CardContent
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-					padding: '0 !important',
-				}}
-			>
+			</StyledCardMedia>
+			<StyledCardContent>
 				<Typography variant='body1' component='div'>
 					{name}
 				</Typography>
 				<Typography variant='body2' color='secondary'>
 					{size}
 				</Typography>
-			</CardContent>
+			</StyledCardContent>
 			<Menu
 				id='folder-actions-menu'
 				anchorEl={anchorEl}

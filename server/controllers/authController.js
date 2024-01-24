@@ -35,7 +35,7 @@ const login = asyncHandler(async (req, res) => {
 	);
 
 	const refreshToken = jwt.sign(
-		{ email: foundUser.email },
+		{ id: foundUser._id },
 		process.env.REFRESH_TOKEN_SECRET,
 		{ expiresIn: '1d' },
 	);
@@ -68,9 +68,7 @@ const refresh = (req, res) => {
 		asyncHandler(async (err, decoded) => {
 			if (err) return res.status(403).json({ message: 'Forbidden' });
 
-			const foundUser = await User.findOne({
-				email: decoded.email,
-			}).exec();
+			const foundUser = await User.findById(decoded?.id).exec();
 
 			if (!foundUser) return res.status(401).json({ message: 'Unauthorized' });
 

@@ -1,14 +1,26 @@
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import { Button, Grid, TextField, Typography, Alert } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { FormWrapper } from '../Signup/style';
+import { FormWrapper } from './style';
 import { FormEvent, useState } from 'react';
 import GlobalContainer from '../../components/GlobalContainer';
 import { useLoginMutation } from '../../features/auth/authApiSlice';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../features/auth/authSlice';
 
+type UseLoginMutationType = {
+	isLoading: boolean;
+	isError: boolean;
+	error: {
+		status: number;
+		data: {
+			message: string;
+		};
+	};
+};
+
 const Login = () => {
-	const [login, { isLoading }] = useLoginMutation();
+	const [login, { isLoading, isError, error }] =
+		useLoginMutation<UseLoginMutationType>();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState<string>('');
@@ -29,9 +41,11 @@ const Login = () => {
 					Login
 				</Typography>
 
-				{/* <Typography variant='body2' textAlign='center' color='error' mb={2}>
-					{error!.data!.message}
-				</Typography> */}
+				{isError && (
+					<Alert severity='error' variant='filled' sx={{ mb: 2.5 }}>
+						{error!.data!.message}
+					</Alert>
+				)}
 
 				<form onSubmit={handleSubmit}>
 					<Grid container spacing={2}>

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import {
 	IconButton,
-	Avatar as MuiAvatar,
-	Menu,
-	MenuItem,
 	ListItemIcon,
 	Typography,
 	Box,
+	MenuItem,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { deepOrange } from '@mui/material/colors';
+import { AvatarWrapper, StyledAvatar, StyledMenu } from './style';
+import { useSendLogoutMutation } from '../../features/auth/authApiSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Avatar = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -21,9 +21,19 @@ const Avatar = () => {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
+	const [sendLogout] = useSendLogoutMutation();
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await sendLogout({}).unwrap();
+		navigate('/login');
+		handleClose();
+	};
+
 	return (
 		<>
-			<Box display={'flex'} alignItems={'center'} gap={1}>
+			<AvatarWrapper>
 				<IconButton
 					onClick={handleClick}
 					size='small'
@@ -31,47 +41,19 @@ const Avatar = () => {
 					aria-haspopup='true'
 					aria-expanded={open ? 'true' : undefined}
 				>
-					<MuiAvatar sx={{ fontSize: 18, bgcolor: deepOrange[500] }}>
-						FO
-					</MuiAvatar>
+					<StyledAvatar>FO</StyledAvatar>
 				</IconButton>
 				<Typography variant='subtitle1'>Fayozbek</Typography>
-			</Box>
-			<Menu
+			</AvatarWrapper>
+			<StyledMenu
 				anchorEl={anchorEl}
 				id='account-menu'
 				open={open}
 				onClose={handleClose}
 				onClick={handleClose}
-				PaperProps={{
-					elevation: 0,
-					sx: {
-						width: 140,
-						overflow: 'visible',
-						filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-						mt: 1.5,
-						'& .MuiAvatar-root': {
-							width: 32,
-							height: 32,
-							ml: -0.5,
-							mr: 1,
-						},
-						'&::before': {
-							content: '""',
-							display: 'block',
-							position: 'absolute',
-							top: 0,
-							right: 14,
-							width: 10,
-							height: 10,
-							bgcolor: 'background.paper',
-							transform: 'translateY(-50%) rotate(45deg)',
-							zIndex: 0,
-						},
-					},
-				}}
 				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+				PaperProps={{ elevation: 0 }}
 			>
 				<MenuItem onClick={handleClose}>
 					<ListItemIcon>
@@ -79,13 +61,13 @@ const Avatar = () => {
 					</ListItemIcon>
 					Profile
 				</MenuItem>
-				<MenuItem onClick={handleClose}>
+				<MenuItem onClick={handleLogout}>
 					<ListItemIcon>
 						<LogoutIcon fontSize='small' />
 					</ListItemIcon>
 					Logout
 				</MenuItem>
-			</Menu>
+			</StyledMenu>
 		</>
 	);
 };

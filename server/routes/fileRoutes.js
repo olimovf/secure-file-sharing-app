@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const fileController = require('../controllers/fileController');
+const fileUpload = require('express-fileupload');
 
 const fileExtLimiter = require('../middleware/fileExtLimiter');
 const fileSizeLimiter = require('../middleware/fileSizeLimiter');
 const filesPayloadExists = require('../middleware/filesPayloadExists');
-const fileUpload = require('express-fileupload');
+const verifyJWT = require('../middleware/verifyJWT');
+
+router.use(verifyJWT);
 
 router
 	.route('/')
@@ -14,7 +17,7 @@ router
 		filesPayloadExists,
 		fileExtLimiter(['.docx', '.pdf', '.pptx']),
 		fileSizeLimiter,
-		fileController.uploadFile,
+		fileController.uploadFiles,
 	);
 
 module.exports = router;

@@ -1,45 +1,44 @@
 import { Grid, Box, Typography, IconButton } from '@mui/material';
 import Folder from '../../components/Folder';
 // import File from '../../components/File';
-import { useState } from 'react';
+// import { useState } from 'react';
 import FileUpload from '@mui/icons-material/FileUpload';
+import { useUploadFilesMutation } from '../../features/file/fileApiSlice';
+
+type UseUploadFilesMutationType = {
+	isLoading: boolean;
+	isError: boolean;
+	error: {
+		status: number;
+		data: {
+			message: string;
+		};
+	};
+};
 
 const Files = () => {
-	const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+	const [uploadFiles, { isLoading, isError, error }] =
+		useUploadFilesMutation<UseUploadFilesMutationType>();
+
+	if (isLoading) console.log('loading');
+
+	if (isError) {
+		console.log(error?.data?.message);
+		alert(error.data.message);
+	}
 
 	const handleFileChange = async (
 		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
-		if (event.target.files) {
-			setSelectedFiles(event.target.files);
+		if (!event.target.files) return;
 
-			const formData = new FormData();
-			for (let i = 0; i < event.target.files.length; i++) {
-				formData.append('files', event.target.files[i]);
-			}
-
-			// try {
-			await fetch('http://localhost:3500/upload', {
-				method: 'POST',
-				body: formData,
-			})
-				.then((data) => data.json())
-				.then((data) => {
-					console.log(data);
-				})
-				.catch((err) => {
-					console.log('error', err.message);
-				});
-			// } catch (error) {
-			// 	console.error('Error uploading files:', error);
-			// }
-
-			// // Log uploaded files to the console
-			// console.log('Uploaded files:');
-			// for (let i = 0; i < event.target.files.length; i++) {
-			// 	console.log(event.target.files[i]);
-			// }
+		const formData = new FormData();
+		for (const file of event.target.files) {
+			console.log(file);
+			formData.append('files', file);
 		}
+
+		await uploadFiles(formData).unwrap();
 	};
 
 	const fileSystem = [
@@ -97,6 +96,7 @@ const Files = () => {
 							onChange={handleFileChange}
 						/>
 					</IconButton>
+					{isError && <p>{error.data.message}</p>}
 				</Box>
 			</Box>
 			<Grid container spacing={2}>

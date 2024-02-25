@@ -9,7 +9,7 @@ const uploadFile = asyncHandler(async (req, res) => {
 	files = Array.isArray(files) ? files : [files];
 
 	files.forEach((file) => {
-		const filepath = path.join(__dirname, 'files', file.name);
+		const filepath = path.resolve(__dirname, '..', 'files', file.name);
 		file.mv(filepath, (err) => {
 			if (err) return res.status(500).json({ message: err });
 		});

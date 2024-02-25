@@ -32,7 +32,7 @@ const File = ({ name, size }: FileProps) => {
 	};
 
 	const handleAction = (action: string) => {
-		console.log(`Performing action: ${action}`);
+		// console.log(`Performing action: ${action}`);
 		handleClose();
 	};
 
@@ -54,9 +54,9 @@ const File = ({ name, size }: FileProps) => {
 				<Typography variant='body1' component='div'>
 					{name}
 				</Typography>
-				<Typography variant='body2' color='secondary'>
+				{/* <Typography variant='body2' color='secondary'>
 					{size}
-				</Typography>
+				</Typography> */}
 			</StyledCardContent>
 			<Menu
 				id='file-actions-menu'

@@ -12,6 +12,6 @@ export const StyledCardMedia = styled('div')(() => ({
 export const StyledCardContent = styled(CardContent)(() => ({
 	display: 'flex',
 	alignItems: 'center',
-	justifyContent: 'space-between',
+	justifyContent: 'center',
 	padding: '0 !important',
 }));

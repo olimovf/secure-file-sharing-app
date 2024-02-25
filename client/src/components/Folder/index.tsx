@@ -6,6 +6,7 @@ import {
 	MenuItem,
 	Typography,
 	ListItemIcon,
+	Checkbox,
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -13,11 +14,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 import { StyledCardContent, StyledCardMedia } from './style';
 
 type FolderProps = {
 	name: string;
-	size: string;
+	size?: string;
 };
 
 const Folder = ({ name, size }: FolderProps) => {
@@ -32,7 +34,7 @@ const Folder = ({ name, size }: FolderProps) => {
 	};
 
 	const handleAction = (action: string) => {
-		console.log(`Performing action: ${action}`);
+		// console.log(`Performing action: ${action}`);
 		handleClose();
 	};
 
@@ -40,11 +42,13 @@ const Folder = ({ name, size }: FolderProps) => {
 		<Card sx={{ p: 1.5 }}>
 			<StyledCardMedia>
 				<FolderIcon sx={{ fontSize: 96 }} color='primary' />
+				<Checkbox size='small' sx={{ position: 'absolute', top: 0, left: 0 }} />
 				<IconButton
 					aria-label='folder-actions'
 					aria-controls='folder-actions-menu'
 					aria-haspopup='true'
 					onClick={handleClick}
+					size='small'
 					sx={{ position: 'absolute', top: 0, right: 0 }}
 				>
 					<MoreVertIcon />
@@ -54,9 +58,9 @@ const Folder = ({ name, size }: FolderProps) => {
 				<Typography variant='body1' component='div'>
 					{name}
 				</Typography>
-				<Typography variant='body2' color='secondary'>
+				{/* <Typography variant='body2' color='secondary'>
 					{size}
-				</Typography>
+				</Typography> */}
 			</StyledCardContent>
 			<Menu
 				id='folder-actions-menu'
@@ -64,6 +68,13 @@ const Folder = ({ name, size }: FolderProps) => {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 			>
+				<MenuItem onClick={() => handleAction('select')}>
+					<ListItemIcon>
+						<CheckIcon fontSize='small' />
+					</ListItemIcon>
+					<Typography variant='inherit'>Select</Typography>
+				</MenuItem>
+
 				<MenuItem onClick={() => handleAction('download')}>
 					<ListItemIcon>
 						<DownloadIcon fontSize='small' />

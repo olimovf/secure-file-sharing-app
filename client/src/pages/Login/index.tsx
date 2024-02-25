@@ -1,4 +1,11 @@
-import { Button, Grid, TextField, Typography, Alert } from '@mui/material';
+import {
+	Button,
+	Grid,
+	TextField,
+	Typography,
+	Alert,
+	useTheme,
+} from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormWrapper } from './style';
 import { FormEvent, useState } from 'react';
@@ -34,6 +41,8 @@ const Login = () => {
 		navigate('/dashboard');
 	};
 
+	const theme = useTheme();
+
 	return (
 		<GlobalContainer maxWidth='xl'>
 			<FormWrapper elevation={3}>
@@ -57,6 +66,11 @@ const Login = () => {
 								fullWidth
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
+								sx={{
+									'& .MuiInputBase-input:-webkit-autofill': {
+										'-webkit-box-shadow': `0 0 0 100px ${theme.palette.background.paper} inset !important`,
+									},
+								}}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -67,6 +81,11 @@ const Login = () => {
 								fullWidth
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
+								sx={{
+									'& .MuiInputBase-input:-webkit-autofill': {
+										'-webkit-box-shadow': `0 0 0 100px ${theme.palette.background.paper} inset !important`,
+									},
+								}}
 							/>
 						</Grid>
 						<Grid item xs={12}>

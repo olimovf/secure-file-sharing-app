@@ -4,12 +4,49 @@ export const fileApiSlice = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
 		uploadFiles: builder.mutation({
 			query: (formData) => ({
-				url: '/upload',
+				url: '/files/upload',
 				method: 'POST',
 				body: formData,
 			}),
+			invalidatesTags: [{ type: 'File', id: 'LIST' }],
+		}),
+		getFiles: builder.query({
+			query: () => ({
+				url: '/files',
+				validateStatus: (response, result) => {
+					return response.status === 200 && !result.isError;
+				},
+			}),
+			providesTags: (result) => {
+				if (result?.length) {
+					return [
+						{ type: 'File', id: 'LIST' },
+						...result.map((file) => ({ type: 'File', id: file._id })),
+					];
+				}
+				return [{ type: 'File', id: 'LIST' }];
+			},
+		}),
+		downloadFile: builder.mutation({
+			query: (fileId) => ({
+				url: `/files/download?id=${fileId}`,
+				method: 'GET',
+			}),
+		}),
+		deleteFile: builder.mutation({
+			query: ({ id }) => ({
+				url: `/files`,
+				method: 'DELETE',
+				body: { id },
+			}),
+			invalidatesTags: (_, __, arg) => [{ type: 'File', id: arg.id }],
 		}),
 	}),
 });
 
-export const { useUploadFilesMutation } = fileApiSlice;
+export const {
+	useUploadFilesMutation,
+	useGetFilesQuery,
+	useDownloadFileMutation,
+	useDeleteFileMutation,
+} = fileApiSlice;

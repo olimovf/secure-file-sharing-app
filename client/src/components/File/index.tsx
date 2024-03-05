@@ -14,14 +14,17 @@ import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { StyledCardContent, StyledCardMedia } from './style';
+import { useDeleteFileMutation } from '../../features/file/fileApiSlice';
 
 type FileProps = {
+	_id: string;
 	name: string;
-	size: string;
+	size?: string;
 };
 
-const File = ({ name, size }: FileProps) => {
+const File = ({ _id, name }: FileProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const [deleteFile] = useDeleteFileMutation();
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -31,8 +34,11 @@ const File = ({ name, size }: FileProps) => {
 		setAnchorEl(null);
 	};
 
-	const handleAction = (action: string) => {
-		// console.log(`Performing action: ${action}`);
+	const handleAction = async (action: string) => {
+		console.log(`Performing action: ${action}`);
+		if (action === 'delete') {
+			await deleteFile({ id: _id });
+		}
 		handleClose();
 	};
 

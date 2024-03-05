@@ -11,7 +11,7 @@ const verifyJWT = require('../middleware/verifyJWT');
 router.use(verifyJWT);
 
 router
-	.route('/')
+	.route('/upload')
 	.post(
 		fileUpload({ createParentPath: true }),
 		filesPayloadExists,
@@ -19,5 +19,12 @@ router
 		fileSizeLimiter,
 		fileController.uploadFiles,
 	);
+
+router
+	.route('/')
+	.get(fileController.getFiles)
+	.delete(fileController.deleteFile);
+
+router.route('/download').get(fileController.downloadFile);
 
 module.exports = router;

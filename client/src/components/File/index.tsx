@@ -14,7 +14,10 @@ import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { StyledCardContent, StyledCardMedia } from './style';
-import { useDeleteFileMutation } from '../../features/file/fileApiSlice';
+import {
+	useDeleteFileMutation,
+	useDownloadFileMutation,
+} from '../../features/file/fileApiSlice';
 
 type FileProps = {
 	_id: string;
@@ -22,9 +25,21 @@ type FileProps = {
 	size?: string;
 };
 
+type UseDownloadFileMutationType = {
+	isLoading: boolean;
+	isError: boolean;
+	error: {
+		status: number;
+		data: {
+			message: string;
+		};
+	};
+};
+
 const File = ({ _id, name }: FileProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [deleteFile] = useDeleteFileMutation();
+	const [downloadFile] = useDownloadFileMutation<UseDownloadFileMutationType>();
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -35,9 +50,11 @@ const File = ({ _id, name }: FileProps) => {
 	};
 
 	const handleAction = async (action: string) => {
-		console.log(`Performing action: ${action}`);
 		if (action === 'delete') {
-			await deleteFile({ id: _id });
+			await deleteFile({ id: _id }).unwrap();
+		}
+		if (action === 'download') {
+			await downloadFile({ id: _id, name }).unwrap();
 		}
 		handleClose();
 	};

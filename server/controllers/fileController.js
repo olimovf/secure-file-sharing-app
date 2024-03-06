@@ -56,15 +56,17 @@ const getFiles = asyncHandler(async (req, res) => {
 });
 
 const downloadFile = asyncHandler(async (req, res) => {
-	const fileId = req.query.id;
-	const file = await File.findById(fileId);
+	const id = req.query?.id;
+	if (!id) {
+		return res.status(400).json({ message: 'File ID is required' });
+	}
 
+	const file = await File.findById(id).exec();
 	if (!file) {
 		return res.status(404).json({ message: 'File not found' });
 	}
 
 	const filePath = path.resolve(__dirname, '..', 'files', file.name);
-
 	if (!fs.existsSync(filePath)) {
 		return res.status(404).json({ message: 'File not found on server' });
 	}
@@ -77,22 +79,17 @@ const downloadFile = asyncHandler(async (req, res) => {
 // @access Private
 
 const deleteFile = asyncHandler(async (req, res) => {
-	const { id } = req.body;
-
-	// Confirm data
+	const id = req.body?.id;
 	if (!id) {
 		return res.status(400).json({ message: 'File ID is required' });
 	}
 
-	// Confirm file exists to delete
 	const file = await File.findById(id).exec();
-
 	if (!file) {
 		return res.status(400).json({ message: 'File not found' });
 	}
 
 	await file.deleteOne();
-
 	const reply = `File '${file.name}' with ID ${file._id} deleted`;
 
 	res.json(reply);

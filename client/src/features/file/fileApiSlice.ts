@@ -28,14 +28,25 @@ export const fileApiSlice = apiSlice.injectEndpoints({
 			},
 		}),
 		downloadFile: builder.mutation({
-			query: (fileId) => ({
-				url: `/files/download?id=${fileId}`,
+			query: ({ id, name }) => ({
+				url: `/files/download?id=${id}`,
 				method: 'GET',
+				cache: 'no-cache',
+				responseHandler: async (resp) => {
+					const link = document.createElement('a');
+					const url = window.URL || window.webkitURL;
+					const blob = url.createObjectURL(await resp.blob());
+					link.href = blob;
+					link.download = name;
+					link.click();
+					url.revokeObjectURL(blob);
+					return null;
+				},
 			}),
 		}),
 		deleteFile: builder.mutation({
 			query: ({ id }) => ({
-				url: `/files`,
+				url: '/files',
 				method: 'DELETE',
 				body: { id },
 			}),

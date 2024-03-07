@@ -1,4 +1,9 @@
-import { CardContent, styled } from '@mui/material';
+import {
+	CardContent,
+	Typography,
+	TypographyProps,
+	styled,
+} from '@mui/material';
 
 export const StyledCardMedia = styled('div')(() => ({
 	height: 140,
@@ -14,4 +19,15 @@ export const StyledCardContent = styled(CardContent)(() => ({
 	alignItems: 'center',
 	justifyContent: 'center',
 	padding: '0 !important',
+}));
+
+export const FileName = styled((props: TypographyProps) => (
+	<Typography component={'div'} {...props} />
+))(() => ({
+	width: '100%',
+	display: '-webkit-box',
+	WebkitBoxOrient: 'vertical',
+	WebkitLineClamp: 1,
+	overflow: 'hidden',
+	textAlign: 'center',
 }));

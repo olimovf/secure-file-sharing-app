@@ -32,7 +32,7 @@ const uploadFiles = asyncHandler(async (req, res) => {
 	await Promise.all(uploadPromises);
 
 	return res.status(200).json({
-		message: `${files.length === 1 ? 'File' : 'Files'} uploaded successfully.`,
+		message: `${files.length === 1 ? 'File' : 'Files'} uploaded successfully`,
 	});
 });
 
@@ -54,6 +54,10 @@ const getFiles = asyncHandler(async (req, res) => {
 
 	res.json(files);
 });
+
+// @desc Download a file
+// @route GET /files/download
+// @access Private
 
 const downloadFile = asyncHandler(async (req, res) => {
 	const id = req.query?.id;
@@ -90,9 +94,39 @@ const deleteFile = asyncHandler(async (req, res) => {
 	}
 
 	await file.deleteOne();
-	const reply = `File '${file.name}' with ID ${file._id} deleted`;
+	res.json({ message: 'File deleted successfully' });
+});
 
-	res.json(reply);
+// @desc Update a file
+// @route PATCH /files
+// @access Private
+
+const updateFile = asyncHandler(async (req, res) => {
+	const { id, name } = req.body;
+	if (!id || !name) {
+		return res.status(400).json({ message: 'All fields are required' });
+	}
+
+	const file = await File.findById(id).exec();
+	if (!file) {
+		return res.status(400).json({ message: 'File not found' });
+	}
+
+	// Check for duplicate file name
+	const duplicate = await File.findOne({ createdBy: req?.user?.id, name })
+		.collation({ locale: 'en', strength: 2 })
+		.lean()
+		.exec();
+
+	// Allow renaming of the original file
+	if (duplicate && duplicate?._id.toString() !== id) {
+		return res.status(409).json({ message: 'Duplicate file name' });
+	}
+
+	file.name = name;
+	await file.save();
+
+	res.json({ message: 'File updated successfully' });
 });
 
 module.exports = {
@@ -100,4 +134,5 @@ module.exports = {
 	getFiles,
 	downloadFile,
 	deleteFile,
+	updateFile,
 };

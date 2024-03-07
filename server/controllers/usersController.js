@@ -8,9 +8,9 @@ const bcrypt = require('bcrypt');
 
 const getAllUsers = asyncHandler(async (req, res) => {
 	const users = await User.find().select('-password').lean();
-	if (!users?.length) {
-		return res.status(400).json({ message: 'No users found' });
-	}
+	// if (!users?.length) {
+	// 	return res.status(400).json({ message: 'No users found' });
+	// }
 	res.json(users);
 });
 
@@ -28,7 +28,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
 	// check for duplicates
 	const duplicate = await User.findOne({ email })
-		// .collation({ locale: 'en', strength: 2 })
+		.collation({ locale: 'en', strength: 2 })
 		.lean()
 		.exec();
 	if (duplicate) {
@@ -115,9 +115,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 	await user.deleteOne();
 
-	const reply = `Email ${user.email} with ID ${user._id} deleted`;
-
-	res.json(reply);
+	res.json({ message: `Email ${user.email} with ID ${user._id} deleted` });
 });
 
 module.exports = {

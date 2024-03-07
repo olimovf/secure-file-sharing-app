@@ -1,7 +1,4 @@
 import { Grid, Box, Typography, IconButton } from '@mui/material';
-// import Folder from '../../components/Folder';
-// import File from '../../components/File';
-// import { useState } from 'react';
 import FileUpload from '@mui/icons-material/FileUpload';
 import {
 	useGetFilesQuery,
@@ -23,19 +20,7 @@ type UseUploadFilesMutationType = {
 const Files = () => {
 	const [uploadFiles, { isError, error }] =
 		useUploadFilesMutation<UseUploadFilesMutationType>();
-
-	const { data: files } = useGetFilesQuery('filesList', {
-		// pollingInterval: 15000,
-		// refetchOnFocus: true,
-		// refetchOnMountOrArgChange: true,
-	});
-
-	// if (isLoading) console.log('loading');
-
-	// if (isError) {
-	// 	console.log(error?.data?.message);
-	// 	alert(error.data.message);
-	// }
+	const { data: files } = useGetFilesQuery('filesList', {});
 
 	const handleFileChange = async (
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -49,41 +34,6 @@ const Files = () => {
 
 		await uploadFiles(formData).unwrap();
 	};
-
-	// const fileSystem = [
-	// 	{
-	// 		name: 'Documents',
-	// 		type: 'folder',
-	// 		items: [
-	// 			{
-	// 				name: 'music1',
-	// 				type: 'file',
-	// 				items: [],
-	// 			},
-	// 			{
-	// 				name: 'music2',
-	// 				type: 'file',
-	// 				items: [],
-	// 			},
-	// 		],
-	// 	},
-	// 	{
-	// 		name: 'Media',
-	// 		type: 'folder',
-	// 		items: [
-	// 			{
-	// 				name: 'image',
-	// 				type: 'file',
-	// 				items: [],
-	// 			},
-	// 		],
-	// 	},
-	// 	{
-	// 		name: 'Book',
-	// 		type: 'file',
-	// 		items: [],
-	// 	},
-	// ];
 
 	return (
 		<>
@@ -109,11 +59,19 @@ const Files = () => {
 				</Box>
 			</Box>
 			<Grid container spacing={2}>
-				{files?.map((file, i: number) => (
-					<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
-						<File {...file} />
+				{files?.length !== 0 ? (
+					files?.map((file, i: number) => (
+						<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
+							<File {...file} />
+						</Grid>
+					))
+				) : (
+					<Grid item xs={12}>
+						<Typography align='center' pb={2} variant='subtitle1'>
+							No files found
+						</Typography>
 					</Grid>
-				))}
+				)}
 			</Grid>
 		</>
 	);

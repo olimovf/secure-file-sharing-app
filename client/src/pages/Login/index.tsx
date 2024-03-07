@@ -68,7 +68,7 @@ const Login = () => {
 								onChange={(e) => setEmail(e.target.value)}
 								sx={{
 									'& .MuiInputBase-input:-webkit-autofill': {
-										'-webkit-box-shadow': `0 0 0 100px ${theme.palette.background.paper} inset !important`,
+										WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
 									},
 								}}
 							/>
@@ -83,7 +83,7 @@ const Login = () => {
 								onChange={(e) => setPassword(e.target.value)}
 								sx={{
 									'& .MuiInputBase-input:-webkit-autofill': {
-										'-webkit-box-shadow': `0 0 0 100px ${theme.palette.background.paper} inset !important`,
+										WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
 									},
 								}}
 							/>

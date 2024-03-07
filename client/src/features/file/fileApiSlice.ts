@@ -52,6 +52,16 @@ export const fileApiSlice = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: (_, __, arg) => [{ type: 'File', id: arg.id }],
 		}),
+		updateFile: builder.mutation({
+			query: (initialFile) => ({
+				url: '/files',
+				method: 'PATCH',
+				body: {
+					...initialFile,
+				},
+			}),
+			invalidatesTags: (_, __, arg) => [{ type: 'File', id: arg.id }],
+		}),
 	}),
 });
 
@@ -60,4 +70,5 @@ export const {
 	useGetFilesQuery,
 	useDownloadFileMutation,
 	useDeleteFileMutation,
+	useUpdateFileMutation,
 } = fileApiSlice;

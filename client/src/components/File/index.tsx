@@ -13,10 +13,11 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { StyledCardContent, StyledCardMedia } from './style';
+import { FileName, StyledCardContent, StyledCardMedia } from './style';
 import {
 	useDeleteFileMutation,
 	useDownloadFileMutation,
+	useUpdateFileMutation,
 } from '../../features/file/fileApiSlice';
 
 type FileProps = {
@@ -25,21 +26,22 @@ type FileProps = {
 	size?: string;
 };
 
-type UseDownloadFileMutationType = {
-	isLoading: boolean;
-	isError: boolean;
-	error: {
-		status: number;
-		data: {
-			message: string;
-		};
-	};
-};
+// type UseDownloadFileMutationType = {
+// 	isLoading: boolean;
+// 	isError: boolean;
+// 	error: {
+// 		status: number;
+// 		data: {
+// 			message: string;
+// 		};
+// 	};
+// };
 
 const File = ({ _id, name }: FileProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [deleteFile] = useDeleteFileMutation();
-	const [downloadFile] = useDownloadFileMutation<UseDownloadFileMutationType>();
+	const [downloadFile] = useDownloadFileMutation();
+	const [updateFile] = useUpdateFileMutation();
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -50,13 +52,19 @@ const File = ({ _id, name }: FileProps) => {
 	};
 
 	const handleAction = async (action: string) => {
+		handleClose();
 		if (action === 'delete') {
 			await deleteFile({ id: _id }).unwrap();
 		}
 		if (action === 'download') {
 			await downloadFile({ id: _id, name }).unwrap();
 		}
-		handleClose();
+		if (action === 'rename') {
+			await updateFile({ id: _id, name }).unwrap();
+		}
+		if (action === 'rename') {
+			//
+		}
 	};
 
 	return (
@@ -74,9 +82,7 @@ const File = ({ _id, name }: FileProps) => {
 				</IconButton>
 			</StyledCardMedia>
 			<StyledCardContent>
-				<Typography variant='body1' component='div'>
-					{name}
-				</Typography>
+				<FileName variant='body1'>{name}</FileName>
 				{/* <Typography variant='body2' color='secondary'>
 					{size}
 				</Typography> */}

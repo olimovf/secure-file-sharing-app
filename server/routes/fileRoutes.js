@@ -23,7 +23,8 @@ router
 router
 	.route('/')
 	.get(fileController.getFiles)
-	.delete(fileController.deleteFile);
+	.delete(fileController.deleteFile)
+	.patch(fileController.updateFile);
 
 router.route('/download').get(fileController.downloadFile);
 

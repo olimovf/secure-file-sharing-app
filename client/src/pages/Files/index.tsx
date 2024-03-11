@@ -6,20 +6,9 @@ import {
 } from '../../features/file/fileApiSlice';
 import File from '../../components/File';
 
-type UseUploadFilesMutationType = {
-	isLoading: boolean;
-	isError: boolean;
-	error: {
-		status: number;
-		data: {
-			message: string;
-		};
-	};
-};
-
 const Files = () => {
 	const [uploadFiles, { isError, error }] =
-		useUploadFilesMutation<UseUploadFilesMutationType>();
+		useUploadFilesMutation<MutationType>();
 	const { data: files } = useGetFilesQuery('filesList', {});
 
 	const handleFileChange = async (
@@ -60,7 +49,7 @@ const Files = () => {
 			</Box>
 			<Grid container spacing={2}>
 				{files?.length !== 0 ? (
-					files?.map((file, i: number) => (
+					files?.map((file: FileType, i: number) => (
 						<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
 							<File {...file} />
 						</Grid>

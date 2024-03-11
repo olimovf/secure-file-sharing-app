@@ -22,6 +22,7 @@ const uploadFiles = asyncHandler(async (req, res) => {
 
 		const newFile = new File({
 			name: file.name,
+			originalName: file.name,
 			size: file.size,
 			createdBy: req?.user?.id,
 		});
@@ -41,7 +42,10 @@ const uploadFiles = asyncHandler(async (req, res) => {
 // @access Private
 
 const getFiles = asyncHandler(async (req, res) => {
-	let files = await File.find({ createdBy: req?.user?.id }).lean().exec();
+	let files = await File.find({ createdBy: req?.user?.id })
+		.select('-originalName')
+		.lean()
+		.exec();
 	// if (!files?.length) {
 	// 	return res.status(400).json({ message: 'No files found' });
 	// }
@@ -70,7 +74,7 @@ const downloadFile = asyncHandler(async (req, res) => {
 		return res.status(404).json({ message: 'File not found' });
 	}
 
-	const filePath = path.resolve(__dirname, '..', 'files', file.name);
+	const filePath = path.resolve(__dirname, '..', 'files', file.originalName);
 	if (!fs.existsSync(filePath)) {
 		return res.status(404).json({ message: 'File not found on server' });
 	}
@@ -112,18 +116,20 @@ const updateFile = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'File not found' });
 	}
 
-	// Check for duplicate file name
-	const duplicate = await File.findOne({ createdBy: req?.user?.id, name })
-		.collation({ locale: 'en', strength: 2 })
-		.lean()
-		.exec();
+	// // Check for duplicate file name
+	// const duplicate = await File.findOne({ createdBy: req?.user?.id, name })
+	// 	.collation({ locale: 'en', strength: 2 })
+	// 	.lean()
+	// 	.exec();
 
-	// Allow renaming of the original file
-	if (duplicate && duplicate?._id.toString() !== id) {
-		return res.status(409).json({ message: 'Duplicate file name' });
-	}
+	// // Allow renaming of the original file
+	// if (duplicate && duplicate?._id.toString() !== id) {
+	// 	return res
+	// 		.status(409)
+	// 		.json({ message: 'File with this name already exists' });
+	// }
 
-	file.name = name;
+	file.name = name + file.name.slice(file.name.lastIndexOf('_'));
 	await file.save();
 
 	res.json({ message: 'File updated successfully' });

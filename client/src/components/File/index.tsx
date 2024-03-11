@@ -17,31 +17,20 @@ import { FileName, StyledCardContent, StyledCardMedia } from './style';
 import {
 	useDeleteFileMutation,
 	useDownloadFileMutation,
-	useUpdateFileMutation,
 } from '../../features/file/fileApiSlice';
+import RenameFileModal from './RenameFileModal';
 
-type FileProps = {
-	_id: string;
-	name: string;
-	size?: string;
-};
-
-// type UseDownloadFileMutationType = {
-// 	isLoading: boolean;
-// 	isError: boolean;
-// 	error: {
-// 		status: number;
-// 		data: {
-// 			message: string;
-// 		};
-// 	};
-// };
-
-const File = ({ _id, name }: FileProps) => {
+const File = ({ _id, name }: FileType) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [deleteFile] = useDeleteFileMutation();
-	const [downloadFile] = useDownloadFileMutation();
-	const [updateFile] = useUpdateFileMutation();
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [newName, setNewName] = useState<string>(
+		name.slice(0, name.lastIndexOf('.')),
+	);
+
+	const fileType: string = name.slice(name.lastIndexOf('.'));
+
+	const [deleteFile] = useDeleteFileMutation<MutationType>();
+	const [downloadFile] = useDownloadFileMutation<MutationType>();
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -60,10 +49,7 @@ const File = ({ _id, name }: FileProps) => {
 			await downloadFile({ id: _id, name }).unwrap();
 		}
 		if (action === 'rename') {
-			await updateFile({ id: _id, name }).unwrap();
-		}
-		if (action === 'rename') {
-			//
+			setIsModalOpen(true);
 		}
 	};
 
@@ -118,6 +104,14 @@ const File = ({ _id, name }: FileProps) => {
 					<Typography variant='inherit'>Delete</Typography>
 				</MenuItem>
 			</Menu>
+			<RenameFileModal
+				open={isModalOpen}
+				setOpen={setIsModalOpen}
+				newName={newName}
+				setNewName={setNewName}
+				fileId={_id}
+				fileType={fileType}
+			/>
 		</Card>
 	);
 };

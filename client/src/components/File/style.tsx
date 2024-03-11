@@ -3,6 +3,7 @@ import {
 	Typography,
 	TypographyProps,
 	styled,
+	Dialog,
 } from '@mui/material';
 
 export const StyledCardMedia = styled('div')(() => ({
@@ -30,4 +31,13 @@ export const FileName = styled((props: TypographyProps) => (
 	WebkitLineClamp: 1,
 	overflow: 'hidden',
 	textAlign: 'center',
+}));
+
+export const StyledDialog = styled(Dialog)(({ theme }) => ({
+	'& .MuiDialogContent-root': {
+		padding: theme.spacing(2),
+	},
+	'& .MuiDialogActions-root': {
+		padding: theme.spacing(1),
+	},
 }));

@@ -21,7 +21,7 @@ export const fileApiSlice = apiSlice.injectEndpoints({
 				if (result?.length) {
 					return [
 						{ type: 'File', id: 'LIST' },
-						...result.map((file) => ({ type: 'File', id: file._id })),
+						...result.map((file: FileType) => ({ type: 'File', id: file._id })),
 					];
 				}
 				return [{ type: 'File', id: 'LIST' }];
@@ -33,6 +33,7 @@ export const fileApiSlice = apiSlice.injectEndpoints({
 				method: 'GET',
 				cache: 'no-cache',
 				responseHandler: async (resp) => {
+					if (resp.status !== 200) return;
 					const link = document.createElement('a');
 					const url = window.URL || window.webkitURL;
 					const blob = url.createObjectURL(await resp.blob());

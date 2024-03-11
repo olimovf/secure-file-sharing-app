@@ -14,20 +14,9 @@ import { useLoginMutation } from '../../features/auth/authApiSlice';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../features/auth/authSlice';
 
-type UseLoginMutationType = {
-	isLoading: boolean;
-	isError: boolean;
-	error: {
-		status: number;
-		data: {
-			message: string;
-		};
-	};
-};
-
 const Login = () => {
 	const [login, { isLoading, isError, error }] =
-		useLoginMutation<UseLoginMutationType>();
+		useLoginMutation<MutationType>();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState<string>('');

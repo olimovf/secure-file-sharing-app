@@ -6,6 +6,7 @@ const {
 	addTimestampToFileName,
 	removeTimestampFromFileName,
 } = require('../helpers');
+const MAX_FILE_NAME_LENGTH = 64;
 
 // @desc File upload
 // @route POST /files/upload
@@ -107,8 +108,16 @@ const deleteFile = asyncHandler(async (req, res) => {
 
 const updateFile = asyncHandler(async (req, res) => {
 	const { id, name } = req.body;
-	if (!id || !name) {
-		return res.status(400).json({ message: 'All fields are required' });
+	if (!id) {
+		return res.status(400).json({ message: 'File ID is required' });
+	}
+	if (!name.trim()) {
+		return res.status(400).json({ message: 'File name is required' });
+	}
+	if (name.trim().length > MAX_FILE_NAME_LENGTH) {
+		return res.status(400).json({
+			message: `File name exceeds the maximum length of ${MAX_FILE_NAME_LENGTH} characters`,
+		});
 	}
 
 	const file = await File.findById(id).exec();

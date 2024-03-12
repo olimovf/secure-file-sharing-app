@@ -25,7 +25,7 @@ export const StyledCardContent = styled(CardContent)(() => ({
 export const FileName = styled((props: TypographyProps) => (
 	<Typography component={'div'} {...props} />
 ))(() => ({
-	width: '100%',
+	width: '90%',
 	display: '-webkit-box',
 	WebkitBoxOrient: 'vertical',
 	WebkitLineClamp: 1,

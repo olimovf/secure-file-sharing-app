@@ -12,41 +12,47 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { StyledDialog } from './style';
 import { useUpdateFileMutation } from '../../features/file/fileApiSlice';
+import notify from '../../utils/notify';
 
 type RenameFileModalProps = {
-	open: boolean;
-	setOpen: (open: boolean) => void;
-	newName: string;
-	setNewName: (name: string) => void;
-	fileType: string;
 	fileId: string;
+	fileType: string;
+	fileState: { isRenaming: boolean; newName: string };
+	setFileState: React.Dispatch<
+		React.SetStateAction<{ isRenaming: boolean; newName: string }>
+	>;
 };
 
 const RenameFileModal = ({
-	open,
-	setOpen,
-	newName,
-	setNewName,
-	fileType,
 	fileId,
+	fileType,
+	fileState,
+	setFileState,
 }: RenameFileModalProps) => {
 	const [updateFile, { isLoading }] = useUpdateFileMutation<MutationType>();
 
 	const handleClose = () => {
-		setOpen(false);
+		setFileState({ ...fileState, isRenaming: false });
 	};
 
 	const onSave = async () => {
-		await updateFile({ id: fileId, name: newName.trim() }).unwrap();
-		handleClose();
+		await updateFile({ id: fileId, name: fileState.newName.trim() })
+			.unwrap()
+			.then((data) => {
+				notify(data?.message, 'success');
+			})
+			.catch((err) => {
+				notify(err?.data?.message || err?.message, 'error');
+			})
+			.finally(() => {
+				handleClose();
+			});
 	};
 
+	const canSave = isLoading || !fileState.newName.trim();
+
 	return (
-		<StyledDialog
-			onClose={handleClose}
-			aria-labelledby='customized-dialog-title'
-			open={open}
-		>
+		<StyledDialog onClose={handleClose} open={fileState.isRenaming}>
 			<DialogTitle sx={{ m: 0, px: 2, py: 1.5 }}>Rename a file</DialogTitle>
 			<IconButton
 				aria-label='close'
@@ -65,16 +71,18 @@ const RenameFileModal = ({
 				<FormControl sx={{ m: 1, width: 320 }} variant='outlined'>
 					<Typography
 						component={'label'}
-						htmlFor='outlined-adornment-weight'
+						htmlFor='newName'
 						fontSize={'16px'}
 						mb={1}
 					>
-						New name
+						New file name
 					</Typography>
 					<OutlinedInput
-						id='outlined-adornment-weight'
-						value={newName}
-						onChange={(e) => setNewName(e.target.value)}
+						id='newName'
+						value={fileState.newName}
+						onChange={(e) =>
+							setFileState({ ...fileState, newName: e.target.value })
+						}
 						endAdornment={
 							<InputAdornment position='end'>{fileType}</InputAdornment>
 						}
@@ -82,12 +90,7 @@ const RenameFileModal = ({
 				</FormControl>
 			</DialogContent>
 			<DialogActions sx={{ padding: '12px !important' }}>
-				<Button
-					autoFocus
-					onClick={onSave}
-					size='small'
-					disabled={!newName.trim() || isLoading}
-				>
+				<Button autoFocus onClick={onSave} size='small' disabled={canSave}>
 					Save
 				</Button>
 			</DialogActions>

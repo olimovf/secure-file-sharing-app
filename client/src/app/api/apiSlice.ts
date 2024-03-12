@@ -14,6 +14,7 @@ interface AuthState {
 const baseQuery = fetchBaseQuery({
 	baseUrl: 'http://localhost:3500',
 	credentials: 'include',
+	timeout: 5000,
 	prepareHeaders: (headers, { getState }) => {
 		const token = (getState() as { auth: AuthState }).auth.token;
 

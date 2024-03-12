@@ -5,10 +5,10 @@ import {
 	useUploadFilesMutation,
 } from '../../features/file/fileApiSlice';
 import File from '../../components/File';
+import notify from '../../utils/notify';
 
 const Files = () => {
-	const [uploadFiles, { isError, error }] =
-		useUploadFilesMutation<MutationType>();
+	const [uploadFiles] = useUploadFilesMutation<MutationType>();
 	const { data: files } = useGetFilesQuery('filesList', {});
 
 	const handleFileChange = async (
@@ -21,7 +21,14 @@ const Files = () => {
 			formData.append('files', file);
 		}
 
-		await uploadFiles(formData).unwrap();
+		await uploadFiles(formData)
+			.unwrap()
+			.then((data) => {
+				notify(data?.message, 'success');
+			})
+			.catch((err) => {
+				notify(err?.data?.message || err?.message, 'error');
+			});
 	};
 
 	return (
@@ -44,7 +51,6 @@ const Files = () => {
 							onChange={handleFileChange}
 						/>
 					</IconButton>
-					{isError && <p>{error.data.message}</p>}
 				</Box>
 			</Box>
 			<Grid container spacing={2}>

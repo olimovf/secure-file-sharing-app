@@ -19,15 +19,14 @@ import {
 	useDownloadFileMutation,
 } from '../../features/file/fileApiSlice';
 import RenameFileModal from './RenameFileModal';
+import notify from '../../utils/notify';
 
 const File = ({ _id, name }: FileType) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [newName, setNewName] = useState<string>(
-		name.slice(0, name.lastIndexOf('.')),
-	);
-
-	const fileType: string = name.slice(name.lastIndexOf('.'));
+	const [fileState, setFileState] = useState<{
+		isRenaming: boolean;
+		newName: string;
+	}>({ isRenaming: false, newName: name.slice(0, name.lastIndexOf('.')) });
 
 	const [deleteFile] = useDeleteFileMutation<MutationType>();
 	const [downloadFile] = useDownloadFileMutation<MutationType>();
@@ -40,17 +39,33 @@ const File = ({ _id, name }: FileType) => {
 		setAnchorEl(null);
 	};
 
-	const handleAction = async (action: string) => {
+	const handleDeleteFile = async () => {
 		handleClose();
-		if (action === 'delete') {
-			await deleteFile({ id: _id }).unwrap();
-		}
-		if (action === 'download') {
-			await downloadFile({ id: _id, name }).unwrap();
-		}
-		if (action === 'rename') {
-			setIsModalOpen(true);
-		}
+		await deleteFile({ id: _id })
+			.unwrap()
+			.then((data) => {
+				notify(data?.message, 'success');
+			})
+			.catch((err) => {
+				notify(err?.data?.message || err?.message, 'error');
+			});
+	};
+
+	const handleDownloadFile = async () => {
+		handleClose();
+		await downloadFile({ id: _id, name })
+			.unwrap()
+			.then(() => {
+				notify('File downloaded successfully', 'success');
+			})
+			.catch((err) => {
+				notify(err?.data?.message || err?.message, 'error');
+			});
+	};
+
+	const handleRenameFile = () => {
+		handleClose();
+		setFileState({ ...fileState, isRenaming: true });
 	};
 
 	return (
@@ -79,25 +94,25 @@ const File = ({ _id, name }: FileType) => {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 			>
-				<MenuItem onClick={() => handleAction('download')}>
+				<MenuItem onClick={handleDownloadFile}>
 					<ListItemIcon>
 						<DownloadIcon fontSize='small' />
 					</ListItemIcon>
 					<Typography variant='inherit'>Download</Typography>
 				</MenuItem>
-				<MenuItem onClick={() => handleAction('share')}>
+				<MenuItem>
 					<ListItemIcon>
 						<ShareIcon fontSize='small' />
 					</ListItemIcon>
 					<Typography variant='inherit'>Share</Typography>
 				</MenuItem>
-				<MenuItem onClick={() => handleAction('rename')}>
+				<MenuItem onClick={handleRenameFile}>
 					<ListItemIcon>
 						<EditIcon fontSize='small' />
 					</ListItemIcon>
 					<Typography variant='inherit'>Rename</Typography>
 				</MenuItem>
-				<MenuItem onClick={() => handleAction('delete')}>
+				<MenuItem onClick={handleDeleteFile}>
 					<ListItemIcon>
 						<DeleteIcon fontSize='small' />
 					</ListItemIcon>
@@ -105,12 +120,10 @@ const File = ({ _id, name }: FileType) => {
 				</MenuItem>
 			</Menu>
 			<RenameFileModal
-				open={isModalOpen}
-				setOpen={setIsModalOpen}
-				newName={newName}
-				setNewName={setNewName}
 				fileId={_id}
-				fileType={fileType}
+				fileType={name.slice(name.lastIndexOf('.'))}
+				fileState={fileState}
+				setFileState={setFileState}
 			/>
 		</Card>
 	);

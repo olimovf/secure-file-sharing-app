@@ -1,6 +1,10 @@
 const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
+const { sendVerificationEmail } = require('../helpers');
+
+const VERIFICATION_TOKEN_EXPIRES_AT = 1; // in hours
 
 // @desc Get all users
 // @route GET /users
@@ -37,16 +41,37 @@ const createNewUser = asyncHandler(async (req, res) => {
 
 	// hash the password
 	const hashedPwd = await bcrypt.hash(password, 10); // salt rounds
-	const userObject =
-		!Array.isArray(roles) || !roles.length
-			? { firstName, lastName, email, password: hashedPwd }
-			: { firstName, lastName, email, password: hashedPwd, roles };
+
+	const token = uuidv4();
+	const hashedToken = await bcrypt.hash(token, 10);
+
+	const tokenExpiresAt = new Date(
+		Date.now() + VERIFICATION_TOKEN_EXPIRES_AT * 60 * 60 * 1000,
+	);
+
+	const userObject = {
+		firstName,
+		lastName,
+		email,
+		password: hashedPwd,
+		token: hashedToken,
+		tokenExpiresAt,
+	};
+
+	if (Array.isArray(roles) && roles.length) {
+		userObject.roles = roles;
+	}
 
 	// create and store user
 	const user = await User.create(userObject);
 
 	if (user) {
-		res.status(201).json({ message: `New user ${firstName} created` });
+		await sendVerificationEmail(user, token);
+
+		res.status(201).json({
+			message:
+				'New user created successfully. Please check your email for verification.',
+		});
 	} else {
 		res.status(400).json({ message: 'Invalid user data received' });
 	}
@@ -118,9 +143,58 @@ const deleteUser = asyncHandler(async (req, res) => {
 	res.json({ message: `Email ${user.email} with ID ${user._id} deleted` });
 });
 
+// @desc Verify a user email
+// @route GET /users/verify/:userId/:vrfcString
+// @access Public
+
+const verifyUserEmail = asyncHandler(async (req, res) => {
+	const { userId, token } = req.params;
+
+	if (!userId || !token) {
+		return res
+			.status(400)
+			.json({ message: 'Both userId and verification token are required' });
+	}
+
+	const user = await User.findById(userId).exec();
+
+	if (!user) {
+		return res.status(404).json({ message: 'User not found' });
+	}
+
+	const { token: userToken, tokenExpiresAt, verified } = user;
+
+	if (verified) {
+		return res.status(400).json({ message: 'Email has already been verified' });
+	}
+
+	if (!userToken || !tokenExpiresAt) {
+		return res
+			.status(400)
+			.json({ message: 'Verification information missing' });
+	}
+
+	if (tokenExpiresAt < Date.now()) {
+		return res.status(400).json({
+			message: 'Verification link has expired. Please request a new one.',
+		});
+	}
+
+	const match = await bcrypt.compare(token, userToken);
+
+	if (match) {
+		user.verified = true;
+		await user.save();
+		return res.status(200).json({ message: 'Email verified successfully' });
+	} else {
+		return res.status(400).json({ message: 'Invalid verification link' });
+	}
+});
+
 module.exports = {
 	getAllUsers,
 	createNewUser,
 	updateUser,
 	deleteUser,
+	verifyUserEmail,
 };

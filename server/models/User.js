@@ -23,6 +23,16 @@ const userSchema = new mongoose.Schema(
 			type: [String],
 			default: ['Employee'],
 		},
+		token: {
+			type: String,
+		},
+		tokenExpiresAt: {
+			type: Date,
+		},
+		verified: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{
 		timestamps: true,

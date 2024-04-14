@@ -18,3 +18,12 @@ type FileType = {
 	createdBy: string;
 	sharedWith: string[];
 };
+
+type UserType = {
+	_id: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	roles: string[];
+	verified?: boolean;
+};

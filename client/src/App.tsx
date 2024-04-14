@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Files from './pages/Files';
 import PersistLogin from './features/auth/PersistLogin';
 import RequireAuth from './features/auth/RequireAuth';
+import Users from './pages/Users';
 
 const App = () => {
 	return (
@@ -24,6 +25,9 @@ const App = () => {
 						<Route path='dashboard' element={<Dashboard />}>
 							<Route index element={<Home />} />
 							<Route path='files' element={<Files />} />
+							<Route path='users' element={<Users />} />
+							{/* <Route element={<RequireAuth allowedRoles={['Admin']} />}>
+							</Route> */}
 						</Route>
 					</Route>
 				</Route>

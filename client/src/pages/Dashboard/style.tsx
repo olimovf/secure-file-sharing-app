@@ -1,5 +1,6 @@
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
+import { Box, BoxProps } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 const drawerWidth = 250;
@@ -71,4 +72,12 @@ export const Drawer = styled(MuiDrawer, {
 		...closedMixin(theme),
 		'& .MuiDrawer-paper': closedMixin(theme),
 	}),
+}));
+
+export const Main = styled((props: BoxProps) => (
+	<Box component={'main'} {...props} />
+))(({ theme }) => ({
+	width: `calc(100% - ${drawerWidth}px)`,
+	flexGrow: theme.spacing(1),
+	padding: theme.spacing(3),
 }));

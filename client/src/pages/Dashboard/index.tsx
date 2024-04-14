@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { AppBar, Drawer, DrawerHeader } from './style';
+import { AppBar, Drawer, DrawerHeader, Main } from './style';
 import {
 	Box,
 	Divider,
@@ -102,10 +102,14 @@ const Dashboard = () => {
 					))}
 				</List>
 			</Drawer>
-			<Box component='main' sx={{ flexGrow: 1, p: 3 }}>
+			<Main
+				sx={{
+					width: open ? 'calc(100% - 250px)' : '100%',
+				}}
+			>
 				<DrawerHeader />
 				<Outlet />
-			</Box>
+			</Main>
 		</Box>
 	);
 };

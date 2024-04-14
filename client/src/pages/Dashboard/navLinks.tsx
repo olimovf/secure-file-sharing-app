@@ -11,6 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 // import HelpIcon from '@mui/icons-material/Help';
 import CoronavirusIcon from '@mui/icons-material/Coronavirus';
 import LogoutIcon from '@mui/icons-material/Logout';
+import UsersIcon from '@mui/icons-material/People';
 
 export const navLinks = [
 	{
@@ -22,6 +23,11 @@ export const navLinks = [
 		name: 'My Files',
 		to: '/dashboard/files',
 		icon: <FolderIcon />,
+	},
+	{
+		name: 'Users',
+		to: '/dashboard/users',
+		icon: <UsersIcon />,
 	},
 	{
 		name: 'Shared by Me',

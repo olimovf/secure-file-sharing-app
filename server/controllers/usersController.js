@@ -11,7 +11,9 @@ const VERIFICATION_TOKEN_EXPIRES_AT = 1; // in hours
 // @access Private
 
 const getAllUsers = asyncHandler(async (req, res) => {
-	const users = await User.find().select('-password').lean();
+	const users = await User.find()
+		.select('-password -token -tokenExpiresAt')
+		.lean();
 	// if (!users?.length) {
 	// 	return res.status(400).json({ message: 'No users found' });
 	// }
@@ -82,10 +84,17 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateUser = asyncHandler(async (req, res) => {
-	const { id, email, roles, password } = req.body;
+	const { id, firstName, lastName, email, roles, password } = req.body;
 
 	// confirm data
-	if (!id || !email || !Array.isArray(roles) || !roles.length) {
+	if (
+		!id ||
+		!firstName ||
+		!lastName ||
+		!email ||
+		!Array.isArray(roles) ||
+		!roles.length
+	) {
 		return res.status(400).json({ message: 'All fields are required' });
 	}
 
@@ -104,6 +113,8 @@ const updateUser = asyncHandler(async (req, res) => {
 		return res.status(409).json({ message: 'Duplicate email' });
 	}
 
+	user.firstName = firstName;
+	user.lastName = lastName;
 	user.email = email;
 	user.roles = roles;
 
@@ -112,9 +123,9 @@ const updateUser = asyncHandler(async (req, res) => {
 		user.password = await bcrypt.hash(password, 10);
 	}
 
-	const updatedUser = await user.save();
+	await user.save();
 
-	res.json({ message: `${updatedUser.firstName} updated` });
+	res.json({ message: 'User updated successfully' });
 });
 
 // @desc Delete a user
@@ -140,7 +151,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 	await user.deleteOne();
 
-	res.json({ message: `Email ${user.email} with ID ${user._id} deleted` });
+	res.json({ message: 'User deleted succesfully' });
 });
 
 // @desc Verify a user email
@@ -159,7 +170,9 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 	const user = await User.findById(userId).exec();
 
 	if (!user) {
-		return res.status(404).json({ message: 'User not found' });
+		return res
+			.status(404)
+			.json({ message: 'User not found or verification link has expired' });
 	}
 
 	const { token: userToken, tokenExpiresAt, verified } = user;
@@ -171,12 +184,14 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 	if (!userToken || !tokenExpiresAt) {
 		return res
 			.status(400)
-			.json({ message: 'Verification information missing' });
+			.json({ message: 'Verification link is not complete' });
 	}
 
 	if (tokenExpiresAt < Date.now()) {
+		await user.deleteOne();
+
 		return res.status(400).json({
-			message: 'Verification link has expired. Please request a new one.',
+			message: 'Verification link has expired. Please register again.',
 		});
 	}
 

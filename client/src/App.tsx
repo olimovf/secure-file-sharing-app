@@ -8,6 +8,9 @@ import Files from './pages/Files';
 import PersistLogin from './features/auth/PersistLogin';
 import RequireAuth from './features/auth/RequireAuth';
 import Users from './pages/Users';
+import EditUser from './pages/Users/EditUser';
+import { ROLES } from './utils/constants';
+import NewUser from './pages/Users/NewUser';
 
 const App = () => {
 	return (
@@ -17,17 +20,15 @@ const App = () => {
 				<Route path='signup' element={<Signup />} />
 
 				<Route element={<PersistLogin />}>
-					<Route
-						element={
-							<RequireAuth allowedRoles={['Employee', 'Admin', 'Manager']} />
-						}
-					>
+					<Route element={<RequireAuth allowedRoles={Object.values(ROLES)} />}>
 						<Route path='dashboard' element={<Dashboard />}>
 							<Route index element={<Home />} />
 							<Route path='files' element={<Files />} />
-							<Route path='users' element={<Users />} />
-							{/* <Route element={<RequireAuth allowedRoles={['Admin']} />}>
-							</Route> */}
+							<Route path='users'>
+								<Route index element={<Users />} />
+								<Route path=':id' element={<EditUser />} />
+								<Route path='new' element={<NewUser />} />
+							</Route>
 						</Route>
 					</Route>
 				</Route>

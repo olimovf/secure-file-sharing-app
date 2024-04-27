@@ -1,34 +1,53 @@
-import {
-	Button,
-	Grid,
-	TextField,
-	Typography,
-	Alert,
-	useTheme,
-} from '@mui/material';
+import { Button, Grid, TextField, Typography, useTheme } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormWrapper } from './style';
-import { FormEvent, useState } from 'react';
+import { useEffect } from 'react';
 import GlobalContainer from '../../components/GlobalContainer';
 import { useLoginMutation } from '../../features/auth/authApiSlice';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../features/auth/authSlice';
+import { useForm } from 'react-hook-form';
+import notify from '../../utils/notify';
+
+type FormValuesType = {
+	email: string;
+	password: string;
+};
 
 const Login = () => {
-	const [login, { isLoading, isError, error }] =
+	const [login, { isLoading, isError, error, reset }] =
 		useLoginMutation<MutationType>();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const [email, setEmail] = useState<string>('');
-	const [password, setPassword] = useState<string>('');
 
-	const handleSubmit = async (e: FormEvent) => {
-		e.preventDefault();
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<FormValuesType>();
 
-		const { accessToken } = await login({ email, password }).unwrap();
-		dispatch(setCredentials({ accessToken }));
-		navigate('/dashboard');
+	const onSubmit = async (data: FormValuesType) => {
+		await login(data)
+			.unwrap()
+			.then(({ accessToken }: { accessToken: string }) => {
+				dispatch(setCredentials({ accessToken }));
+				navigate('/dashboard');
+				notify('You are logged in successfully', 'success');
+			})
+			.catch((err) => {
+				notify(err?.data?.message || err?.message || 'Login failed', 'error');
+			});
 	};
+
+	useEffect(() => {
+		if (isError && error) {
+			const timeoutId = setTimeout(() => {
+				reset();
+			}, 5000);
+
+			return () => clearTimeout(timeoutId);
+		}
+	}, [isError, error, reset]);
 
 	const theme = useTheme();
 
@@ -39,42 +58,62 @@ const Login = () => {
 					Login
 				</Typography>
 
-				{isError && (
-					<Alert severity='error' variant='filled' sx={{ mb: 2.5 }}>
-						{error!.data!.message}
-					</Alert>
-				)}
-
-				<form onSubmit={handleSubmit}>
+				<form onSubmit={handleSubmit(onSubmit)}>
 					<Grid container spacing={2}>
 						<Grid item xs={12}>
 							<TextField
 								label='Email'
-								type='email'
-								name='email'
 								fullWidth
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
 								sx={{
 									'& .MuiInputBase-input:-webkit-autofill': {
 										WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
 									},
+									'& .MuiFormHelperText-root': {
+										margin: '4px',
+									},
 								}}
+								error={!!errors.email}
+								helperText={errors.email?.message}
+								{...register('email', {
+									required: 'Email is required',
+									setValueAs(value) {
+										return value.trim();
+									},
+									pattern: {
+										value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+										message: 'Invalid email',
+									},
+								})}
 							/>
 						</Grid>
 						<Grid item xs={12}>
 							<TextField
 								label='Password'
 								type='password'
-								name='password'
 								fullWidth
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
 								sx={{
 									'& .MuiInputBase-input:-webkit-autofill': {
 										WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
 									},
+									'& .MuiFormHelperText-root': {
+										margin: '4px',
+									},
 								}}
+								error={!!errors.password}
+								helperText={errors.password?.message}
+								{...register('password', {
+									required: 'Password is required',
+									// minLength: {
+									// 	value: 8,
+									// 	message: 'Password must be at least 8 characters long',
+									// },
+									// pattern: {
+									// 	value:
+									// 		/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+									// 	message:
+									// 		'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+									// },
+								})}
 							/>
 						</Grid>
 						<Grid item xs={12}>

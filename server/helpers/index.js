@@ -28,7 +28,7 @@ const sendVerificationEmail = async (user, token) => {
 
 	const mailOptions = {
 		from: {
-			name: 'Secure File Sharing Application',
+			name: 'Secure File Sharing',
 			address: process.env.USER,
 		},
 		to: user.email,

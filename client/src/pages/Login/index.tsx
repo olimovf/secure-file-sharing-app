@@ -1,4 +1,4 @@
-import { Button, Grid, TextField, Typography, useTheme } from '@mui/material';
+import { Button, Grid, TextField, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormWrapper } from './style';
 import { useEffect } from 'react';
@@ -12,6 +12,15 @@ import notify from '../../utils/notify';
 type FormValuesType = {
 	email: string;
 	password: string;
+};
+
+const inputStyles = {
+	'& .MuiInputBase-input:-webkit-autofill': {
+		WebkitBoxShadow: `0 0 0 100px #252525 inset !important`,
+	},
+	'& .MuiFormHelperText-root': {
+		margin: '4px',
+	},
 };
 
 const Login = () => {
@@ -49,8 +58,6 @@ const Login = () => {
 		}
 	}, [isError, error, reset]);
 
-	const theme = useTheme();
-
 	return (
 		<GlobalContainer maxWidth='xl'>
 			<FormWrapper elevation={3}>
@@ -64,14 +71,7 @@ const Login = () => {
 							<TextField
 								label='Email'
 								fullWidth
-								sx={{
-									'& .MuiInputBase-input:-webkit-autofill': {
-										WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
-									},
-									'& .MuiFormHelperText-root': {
-										margin: '4px',
-									},
-								}}
+								sx={inputStyles}
 								error={!!errors.email}
 								helperText={errors.email?.message}
 								{...register('email', {
@@ -91,28 +91,11 @@ const Login = () => {
 								label='Password'
 								type='password'
 								fullWidth
-								sx={{
-									'& .MuiInputBase-input:-webkit-autofill': {
-										WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
-									},
-									'& .MuiFormHelperText-root': {
-										margin: '4px',
-									},
-								}}
+								sx={inputStyles}
 								error={!!errors.password}
 								helperText={errors.password?.message}
 								{...register('password', {
 									required: 'Password is required',
-									// minLength: {
-									// 	value: 8,
-									// 	message: 'Password must be at least 8 characters long',
-									// },
-									// pattern: {
-									// 	value:
-									// 		/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-									// 	message:
-									// 		'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-									// },
 								})}
 							/>
 						</Grid>

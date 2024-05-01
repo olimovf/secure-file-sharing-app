@@ -2,25 +2,22 @@ import { useSelector } from 'react-redux';
 import { selectCurrentToken } from '../features/auth/authSlice';
 import { jwtDecode } from 'jwt-decode';
 
-interface DecodedToken {
-	UserInfo: {
-		id: string;
-		roles: string[];
-	};
-}
-
-interface AuthInfo {
+type AuthInfo = {
 	id: string;
 	roles: string[];
-	isAdmin: boolean;
-	status: 'Employee' | 'Manager' | 'Admin';
-}
+	// isAdmin: boolean;
+	// status: 'User' | 'Admin';
+};
+
+type DecodedToken = {
+	UserInfo: AuthInfo;
+};
 
 const useAuth = (): AuthInfo => {
 	const token = useSelector(selectCurrentToken);
 
-	let isAdmin = false;
-	let status: 'Employee' | 'Admin' | 'Manager' = 'Employee';
+	// let isAdmin = false;
+	// let status: 'User' | 'Admin' = 'User';
 	let id = '';
 	let roles: string[] = [];
 
@@ -33,13 +30,13 @@ const useAuth = (): AuthInfo => {
 			id = userId || '';
 			roles = userRoles || [];
 
-			isAdmin = roles.includes('Admin');
+			// isAdmin = roles.includes('Admin');
 
-			if (isAdmin) status = 'Admin';
+			// if (isAdmin) status = 'Admin';
 		}
 	}
 
-	return { id, roles, isAdmin, status };
+	return { id, roles };
 };
 
 export default useAuth;

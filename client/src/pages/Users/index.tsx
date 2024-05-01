@@ -17,9 +17,13 @@ import { loadColumns } from './configureUserTableCols';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import notify from '../../utils/notify';
+import { PulseLoader } from 'react-spinners';
 
 const Users = () => {
-	const { data: users } = useGetUsersQuery('usersList', {});
+	const { data: users, isLoading: usersLoading } = useGetUsersQuery(
+		'usersList',
+		{},
+	);
 	const rows = users?.map((user: UserType, index: number) => ({
 		id: user._id,
 		tr: index + 1,
@@ -70,21 +74,25 @@ const Users = () => {
 				</Button>
 			</Box>
 
-			<Box sx={{ width: '100%', mt: 2 }}>
-				<DataGrid
-					rows={rows || []}
-					columns={loadColumns(onDelete, onEdit)}
-					initialState={{
-						pagination: {
-							paginationModel: {
-								pageSize: 5,
+			{usersLoading ? (
+				<PulseLoader color={'#FFF'} />
+			) : (
+				<Box sx={{ width: '100%', mt: 2 }}>
+					<DataGrid
+						rows={rows || []}
+						columns={loadColumns(onDelete, onEdit)}
+						initialState={{
+							pagination: {
+								paginationModel: {
+									pageSize: 5,
+								},
 							},
-						},
-					}}
-					pageSizeOptions={[5]}
-					disableRowSelectionOnClick
-				/>
-			</Box>
+						}}
+						pageSizeOptions={[5]}
+						disableRowSelectionOnClick
+					/>
+				</Box>
+			)}
 
 			<Dialog open={open} onClose={handleDeleteCancel}>
 				<DialogTitle>Confirm Deletion</DialogTitle>

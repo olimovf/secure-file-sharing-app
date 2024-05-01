@@ -11,8 +11,17 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { AvatarWrapper, StyledAvatar, StyledMenu } from './style';
 import { useSendLogoutMutation } from '../../features/auth/authApiSlice';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
+import { useGetUsersQuery } from '../../features/users/usersApiSlice';
 
 const Avatar = () => {
+	const { id, roles } = useAuth();
+	const { user }: { user: UserType } = useGetUsersQuery('usersList', {
+		selectFromResult: ({ data }) => ({
+			user: data?.find((user: UserType) => user._id === id),
+		}),
+	});
+
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -31,6 +40,11 @@ const Avatar = () => {
 		handleClose();
 	};
 
+	const goToProfile = () => {
+		handleClose();
+		navigate('/dashboard/profile');
+	};
+
 	return (
 		<>
 			<AvatarWrapper>
@@ -41,9 +55,9 @@ const Avatar = () => {
 					aria-haspopup='true'
 					aria-expanded={open ? 'true' : undefined}
 				>
-					<StyledAvatar>FO</StyledAvatar>
+					<StyledAvatar>{`${user?.firstName?.[0]}${user?.lastName?.[0]}`}</StyledAvatar>
 				</IconButton>
-				<Typography variant='subtitle1'>Fayozbek</Typography>
+				<Typography variant='subtitle1'>{user?.firstName}</Typography>
 			</AvatarWrapper>
 			<StyledMenu
 				anchorEl={anchorEl}
@@ -55,7 +69,7 @@ const Avatar = () => {
 				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
 				PaperProps={{ elevation: 0 }}
 			>
-				<MenuItem onClick={handleClose}>
+				<MenuItem onClick={goToProfile}>
 					<ListItemIcon>
 						<PersonIcon fontSize='small' />
 					</ListItemIcon>

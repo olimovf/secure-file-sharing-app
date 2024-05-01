@@ -11,6 +11,7 @@ import Users from './pages/Users';
 import EditUser from './pages/Users/EditUser';
 import { ROLES } from './utils/constants';
 import NewUser from './pages/Users/NewUser';
+import Profile from './pages/Profile';
 
 const App = () => {
 	return (
@@ -29,6 +30,7 @@ const App = () => {
 								<Route path=':id' element={<EditUser />} />
 								<Route path='new' element={<NewUser />} />
 							</Route>
+							<Route path='profile' element={<Profile />} />
 						</Route>
 					</Route>
 				</Route>

@@ -2,7 +2,7 @@ const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { sendVerificationEmail } = require('../helpers');
+const { sendVerificationEmail, sendInvitationEmail } = require('../helpers');
 
 const VERIFICATION_TOKEN_EXPIRES_AT = 1; // in hours
 
@@ -25,10 +25,19 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @access Private
 
 const createNewUser = asyncHandler(async (req, res) => {
-	const { firstName, lastName, email, password, roles } = req.body;
+	const {
+		firstName,
+		lastName,
+		email,
+		password,
+		roles,
+		type = 'register',
+	} = req.body;
+
+	console.log(req.body);
 
 	// confirm data
-	if (!firstName || !lastName || !email || !password) {
+	if (!firstName || !lastName || !email || (type !== 'register' && !password)) {
 		return res.status(400).json({ message: 'All fields are required' });
 	}
 
@@ -38,7 +47,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 		.lean()
 		.exec();
 	if (duplicate) {
-		return res.status(409).json({ message: 'Duplicate email' });
+		return res.status(409).json({ message: 'This email already exists' });
 	}
 
 	// hash the password
@@ -68,11 +77,19 @@ const createNewUser = asyncHandler(async (req, res) => {
 	const user = await User.create(userObject);
 
 	if (user) {
-		await sendVerificationEmail(user, token);
+		if (type === 'invitation') {
+			await sendInvitationEmail(user);
+		} else {
+			await sendVerificationEmail(user, token);
+		}
+
+		const resMsg =
+			type === 'invitation'
+				? 'User created successfully'
+				: 'You are registered successfully. Please, check your email for verification.';
 
 		res.status(201).json({
-			message:
-				'New user created successfully. Please check your email for verification.',
+			message: resMsg,
 		});
 	} else {
 		res.status(400).json({ message: 'Invalid user data received' });
@@ -110,7 +127,7 @@ const updateUser = asyncHandler(async (req, res) => {
 		.exec();
 	// allow updates to the original user
 	if (duplicate && duplicate._id.toString() !== id) {
-		return res.status(409).json({ message: 'Duplicate email' });
+		return res.status(409).json({ message: 'This email already exists' });
 	}
 
 	user.firstName = firstName;
@@ -155,16 +172,14 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 // @desc Verify a user email
-// @route GET /users/verify/:userId/:vrfcString
+// @route GET /users/verify/:userId/:token
 // @access Public
 
 const verifyUserEmail = asyncHandler(async (req, res) => {
 	const { userId, token } = req.params;
 
 	if (!userId || !token) {
-		return res
-			.status(400)
-			.json({ message: 'Both userId and verification token are required' });
+		return res.status(400).json({ message: 'Invalid verification link' });
 	}
 
 	const user = await User.findById(userId).exec();
@@ -191,8 +206,36 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 		await user.deleteOne();
 
 		return res.status(400).json({
-			message: 'Verification link has expired. Please register again.',
+			message: 'Verification link has expired. Please sign up again.',
 		});
+	}
+
+	const match = await bcrypt.compare(token, userToken);
+
+	if (match) {
+		user.verified = true;
+		await user.save();
+		return res.status(200).json({ message: 'Email verified successfully' });
+	} else {
+		return res.status(400).json({ message: 'Invalid verification link' });
+	}
+});
+
+// @desc Set a password
+// @route GET /users/invitation/:userId
+// @access Public
+
+const setPassword = asyncHandler(async (req, res) => {
+	const { userId } = req.params;
+
+	if (!userId) {
+		return res.status(400).json({ message: 'Invalid invitation link' });
+	}
+
+	const user = await User.findById(userId).exec();
+
+	if (!user) {
+		return res.status(404).json({ message: 'User not found' });
 	}
 
 	const match = await bcrypt.compare(token, userToken);
@@ -212,4 +255,5 @@ module.exports = {
 	updateUser,
 	deleteUser,
 	verifyUserEmail,
+	setPassword,
 };

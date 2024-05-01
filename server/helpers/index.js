@@ -32,11 +32,33 @@ const sendVerificationEmail = async (user, token) => {
 			address: process.env.USER,
 		},
 		to: user.email,
-		subject: 'Please verify your email address',
+		subject: 'Verify your email address',
 		html: `
-			<p>Hello ${user.firstName},</p>
-			<p>Please verify your email address by clicking the following link:</p>
+			<p>Dear ${user.firstName},</p>
+			<p>Please click on the link below to verify your email address:</p>
 			<p><a href="${verificationLink}">${verificationLink}</a></p>
+			<p>Note that this link will expire in <b>1 hour</b>.</p>
+    `,
+	};
+
+	transporter.sendMail(mailOptions);
+};
+
+const sendInvitationEmail = async (user) => {
+	const invitationLink = `http://localhost:3500/users/invitation/${user._id}`;
+
+	const mailOptions = {
+		from: {
+			name: 'Secure File Sharing',
+			address: process.env.USER,
+		},
+		to: user.email,
+		subject: 'Invitation',
+		html: `
+			<p>Dear ${user.firstName},</p>
+			<p>You have been invited to Secure File Sharing Application.</p>
+			<p>Please click on the link below to set a password for your account:</p>
+			<p><a href="${invitationLink}">${invitationLink}</a></p>
     `,
 	};
 
@@ -47,4 +69,5 @@ module.exports = {
 	addTimestampToFileName,
 	removeTimestampFromFileName,
 	sendVerificationEmail,
+	sendInvitationEmail,
 };

@@ -3,8 +3,9 @@ import { useRefreshMutation } from './authApiSlice';
 import usePersist from '../../hooks/usePersist';
 import { useSelector } from 'react-redux';
 import { selectCurrentToken } from './authSlice';
-// import PulseLoader from 'react-spinners/PulseLoader';
 import { Outlet, Link } from 'react-router-dom';
+import { PulseLoader } from 'react-spinners';
+import { Box } from '@mui/material';
 
 type UseRefreshMutationType = {
 	isUninitialized: boolean;
@@ -63,7 +64,16 @@ const PersistLogin = () => {
 	} else if (isLoading) {
 		// persist: yes, token: no
 		console.log('loading');
-		content = <p>Loading...</p>; // <PulseLoader color={'#FFF'} />;
+		content = (
+			<Box
+				display={'flex'}
+				justifyContent={'center'}
+				alignItems={'center'}
+				minHeight={'100vh'}
+			>
+				<PulseLoader color={'#FFF'} />
+			</Box>
+		);
 	} else if (isError) {
 		// persist: yes, token: no
 		console.log('error', error);

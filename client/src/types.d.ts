@@ -27,3 +27,7 @@ type UserType = {
 	roles: string[];
 	verified?: boolean;
 };
+
+type AuthStateType = {
+	token: string | null;
+};

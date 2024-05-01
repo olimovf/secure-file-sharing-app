@@ -7,16 +7,12 @@ import {
 } from '@reduxjs/toolkit/query/react';
 import { setCredentials } from '../../features/auth/authSlice';
 
-interface AuthState {
-	token: string | null;
-}
-
 const baseQuery = fetchBaseQuery({
 	baseUrl: 'http://localhost:3500',
 	credentials: 'include',
 	timeout: 5000,
 	prepareHeaders: (headers, { getState }) => {
-		const token = (getState() as { auth: AuthState }).auth.token;
+		const token = (getState() as { auth: AuthStateType }).auth.token;
 
 		if (token) {
 			headers.set('authorization', `Bearer ${token}`);

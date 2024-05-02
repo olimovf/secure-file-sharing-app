@@ -23,8 +23,13 @@ const transporter = nodemailer.createTransport({
 	},
 });
 
+const BASE_URL =
+	process.env.NODE_ENV === 'production'
+		? 'https://secure-file-sharing-app.onrender.com'
+		: 'http://localhost:3500';
+
 const sendVerificationEmail = async (user, token) => {
-	const verificationLink = `http://localhost:3500/users/verify/${user._id}/${token}`;
+	const verificationLink = `${BASE_URL}/users/verify/${user._id}/${token}`;
 
 	const mailOptions = {
 		from: {
@@ -45,7 +50,7 @@ const sendVerificationEmail = async (user, token) => {
 };
 
 const sendInvitationEmail = async (user) => {
-	const invitationLink = `http://localhost:3500/users/invitation/${user._id}`;
+	const invitationLink = `${BASE_URL}/users/invitation/${user._id}`;
 
 	const mailOptions = {
 		from: {

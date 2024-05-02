@@ -1,5 +1,5 @@
 import { Button, Grid, TextField, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FormWrapper } from './style';
 import GlobalContainer from '../../components/GlobalContainer';
 import { useForm } from 'react-hook-form';
@@ -38,14 +38,12 @@ const Signup = () => {
 			.unwrap()
 			.then((data) => {
 				notify(data?.message, 'success');
-			})
-			.catch((err) => {
-				notify(err?.data?.message || err?.message, 'error');
-			})
-			.finally(() => {
 				setTimeout(() => {
 					reset();
 				}, 2000);
+			})
+			.catch((err) => {
+				notify(err?.data?.message || err?.message, 'error');
 			});
 	};
 

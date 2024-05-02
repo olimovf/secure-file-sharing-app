@@ -22,7 +22,7 @@ type FolderProps = {
 	size?: string;
 };
 
-const Folder = ({ name, size }: FolderProps) => {
+const Folder = ({ name }: FolderProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,7 +34,7 @@ const Folder = ({ name, size }: FolderProps) => {
 	};
 
 	const handleAction = (action: string) => {
-		// console.log(`Performing action: ${action}`);
+		console.log(`Performing action: ${action}`);
 		handleClose();
 	};
 

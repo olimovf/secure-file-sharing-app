@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-	IconButton,
-	ListItemIcon,
-	Typography,
-	Box,
-	MenuItem,
-} from '@mui/material';
+import { IconButton, ListItemIcon, Typography, MenuItem } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AvatarWrapper, StyledAvatar, StyledMenu } from './style';
@@ -15,7 +9,7 @@ import useAuth from '../../hooks/useAuth';
 import { useGetUsersQuery } from '../../features/users/usersApiSlice';
 
 const Avatar = () => {
-	const { id, roles } = useAuth();
+	const { id } = useAuth();
 	const { user }: { user: UserType } = useGetUsersQuery('usersList', {
 		selectFromResult: ({ data }) => ({
 			user: data?.find((user: UserType) => user._id === id),

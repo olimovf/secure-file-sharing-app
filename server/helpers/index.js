@@ -25,7 +25,7 @@ const transporter = nodemailer.createTransport({
 
 const BASE_URL =
 	process.env.NODE_ENV === 'production'
-		? 'https://secure-file-sharing-app1.onrender.com'
+		? 'https://secure-file-sharing-app.onrender.com'
 		: 'http://localhost:3500';
 
 const sendVerificationEmail = async (user, token) => {

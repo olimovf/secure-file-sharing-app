@@ -6,10 +6,14 @@ import {
 } from '../../features/file/fileApiSlice';
 import File from '../../components/File';
 import notify from '../../utils/notify';
+import { PulseLoader } from 'react-spinners';
 
 const Files = () => {
 	const [uploadFiles] = useUploadFilesMutation<MutationType>();
-	const { data: files } = useGetFilesQuery('filesList', {});
+	const { data: files, isLoading: filesLoading } = useGetFilesQuery(
+		'filesList',
+		{},
+	);
 
 	const handleFileChange = async (
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -54,18 +58,24 @@ const Files = () => {
 				</Box>
 			</Box>
 			<Grid container spacing={2}>
-				{files?.length !== 0 ? (
-					files?.map((file: FileType, i: number) => (
-						<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
-							<File {...file} />
-						</Grid>
-					))
+				{filesLoading ? (
+					<PulseLoader color={'#FFF'} />
 				) : (
-					<Grid item xs={12}>
-						<Typography align='center' pb={2} variant='subtitle1'>
-							No files found
-						</Typography>
-					</Grid>
+					<>
+						{files?.length !== 0 ? (
+							files?.map((file: FileType, i: number) => (
+								<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
+									<File {...file} />
+								</Grid>
+							))
+						) : (
+							<Grid item xs={12}>
+								<Typography align='center' pb={2} variant='subtitle1'>
+									No files found
+								</Typography>
+							</Grid>
+						)}
+					</>
 				)}
 			</Grid>
 		</>

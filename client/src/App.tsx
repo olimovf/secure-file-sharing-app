@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Layout from './components/Layout';
@@ -17,6 +17,7 @@ const App = () => {
 	return (
 		<Routes>
 			<Route path='/' element={<Layout />}>
+				<Route path='/' element={<Navigate to='/login' replace />} />
 				<Route path='login' element={<Login />} />
 				<Route path='signup' element={<Signup />} />
 

@@ -7,10 +7,7 @@ import {
 } from '@reduxjs/toolkit/query/react';
 import { setCredentials } from '../../features/auth/authSlice';
 
-const BASE_URL =
-	process.env.NODE_ENV === 'production'
-		? 'https://secure-file-sharing-api.onrender.com'
-		: 'http://localhost:3500';
+const BASE_URL = 'https://secure-file-sharing-api.onrender.com';
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: BASE_URL,

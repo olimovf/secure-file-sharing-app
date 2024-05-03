@@ -59,7 +59,11 @@ const File = ({ _id, name }: FileType) => {
 				notify('File downloaded successfully', 'success');
 			})
 			.catch((err) => {
-				notify(err?.data?.message || err?.message, 'error');
+				if (err.status === 404) {
+					notify('File not found on server', 'error');
+				} else {
+					notify(err?.data?.message || err?.message, 'error');
+				}
 			});
 	};
 

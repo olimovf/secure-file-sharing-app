@@ -4,7 +4,7 @@ import SharedByMeIcon from '@mui/icons-material/FileUpload';
 import SharedWithMeIcon from '@mui/icons-material/FileDownload';
 // import ShareIcon from '@mui/icons-material/Share';
 import HistoryIcon from '@mui/icons-material/History';
-import SettingsIcon from '@mui/icons-material/Settings';
+// import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
 // import NotificationsIcon from '@mui/icons-material/Notifications';
 // import SearchIcon from '@mui/icons-material/Search';
@@ -49,11 +49,11 @@ export const navLinks = [
 		to: '/dashboard/activity',
 		icon: <HistoryIcon />,
 	},
-	{
-		name: 'Settings',
-		to: '/dashboard/settings',
-		icon: <SettingsIcon />,
-	},
+	// {
+	// 	name: 'Settings',
+	// 	to: '/dashboard/settings',
+	// 	icon: <SettingsIcon />,
+	// },
 	{
 		name: 'VirusTotal',
 		to: '/dashboard/virustotal',

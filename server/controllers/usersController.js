@@ -193,7 +193,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 	const { token: userToken, tokenExpiresAt, verified } = user;
 
 	if (verified) {
-		return res.status(400).json({ message: 'Email has already been verified' });
+		return res.status(200).json({ message: 'Email has already been verified' });
 	}
 
 	if (!userToken || !tokenExpiresAt) {

@@ -12,6 +12,7 @@ import EditUser from './pages/Users/EditUser';
 import { ROLES } from './utils/constants';
 import NewUser from './pages/Users/NewUser';
 import Profile from './pages/Profile';
+import Verification from './pages/Verification';
 
 const App = () => {
 	return (
@@ -35,6 +36,8 @@ const App = () => {
 						</Route>
 					</Route>
 				</Route>
+
+				<Route path='users/verify/:userId/:token' element={<Verification />} />
 			</Route>
 		</Routes>
 	);

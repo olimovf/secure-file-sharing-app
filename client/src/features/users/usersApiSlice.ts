@@ -47,6 +47,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: (_, __, arg) => [{ type: 'User', id: arg.id }],
 		}),
+		verifyUser: builder.query({
+			query: ({ userId, token }) => ({
+				url: `/users/verify/${userId}/${token}`,
+				validateStatus: (response, result) => {
+					return response.status === 200 && !result.isError;
+				},
+			}),
+		}),
 	}),
 });
 
@@ -55,4 +63,5 @@ export const {
 	useAddNewUserMutation,
 	useUpdateUserMutation,
 	useDeleteUserMutation,
+	useVerifyUserQuery,
 } = usersApiSlice;

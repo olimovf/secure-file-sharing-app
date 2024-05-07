@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Card,
 	IconButton,
@@ -27,6 +27,13 @@ const File = ({ _id, name }: FileType) => {
 		isRenaming: boolean;
 		newName: string;
 	}>({ isRenaming: false, newName: name.slice(0, name.lastIndexOf('.')) });
+
+	useEffect(() => {
+		setFileState({
+			isRenaming: false,
+			newName: name.slice(0, name.lastIndexOf('.')),
+		});
+	}, [_id, name]);
 
 	const [deleteFile] = useDeleteFileMutation<MutationType>();
 	const [downloadFile] = useDownloadFileMutation<MutationType>();

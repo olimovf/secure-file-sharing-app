@@ -60,6 +60,15 @@ const Profile = () => {
 		}
 	}, [user, setValue]);
 
+	const inputStyles = {
+		'& .MuiInputBase-input:-webkit-autofill': {
+			WebkitBoxShadow: `0 0 0 100px ${theme.palette.mode === 'dark' ? '#252525' : '#fff'} inset !important`,
+		},
+		'& .MuiFormHelperText-root': {
+			margin: '4px',
+		},
+	};
+
 	return (
 		<Box>
 			<Typography variant='h4'>Profile</Typography>
@@ -92,11 +101,7 @@ const Profile = () => {
 						})}
 						error={!!errors.firstName}
 						helperText={errors.firstName?.message}
-						sx={{
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 					/>
 				</div>
 
@@ -121,11 +126,7 @@ const Profile = () => {
 						})}
 						error={!!errors.lastName}
 						helperText={errors.lastName?.message}
-						sx={{
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 					/>
 				</div>
 
@@ -155,11 +156,7 @@ const Profile = () => {
 						})}
 						error={!!errors.email}
 						helperText={errors.email?.message}
-						sx={{
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 					/>
 				</div>
 
@@ -192,11 +189,7 @@ const Profile = () => {
 										error={!!errors.roles}
 										helperText={errors.roles?.message}
 										autoComplete='off'
-										sx={{
-											'& .MuiFormHelperText-root': {
-												margin: '4px',
-											},
-										}}
+										sx={inputStyles}
 									/>
 								)}
 							/>
@@ -217,14 +210,7 @@ const Profile = () => {
 						type='password'
 						fullWidth
 						id='password'
-						sx={{
-							'& .MuiInputBase-input:-webkit-autofill': {
-								WebkitBoxShadow: `0 0 0 100px ${theme.palette.background.paper} inset !important`,
-							},
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 						error={!!errors.password}
 						helperText={errors.password?.message}
 						{...register('password', {

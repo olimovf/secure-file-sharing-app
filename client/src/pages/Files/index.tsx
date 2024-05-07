@@ -49,7 +49,7 @@ const Files = () => {
 						<FileUpload />
 						<input
 							type='file'
-							accept='.docx, .pdf, .pptx'
+							accept='.docx, .doc, .pdf'
 							hidden
 							multiple
 							onChange={handleFileChange}
@@ -59,7 +59,9 @@ const Files = () => {
 			</Box>
 			<Grid container spacing={2}>
 				{filesLoading ? (
-					<PulseLoader color={'#FFF'} />
+					<Grid item xs={12}>
+						<PulseLoader color={'#FFF'} />
+					</Grid>
 				) : (
 					<>
 						{files?.length !== 0 ? (

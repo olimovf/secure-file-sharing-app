@@ -46,7 +46,7 @@ export const navLinks = [
 	},
 	{
 		name: 'Activity',
-		to: '/dashboard/activity',
+		// to: '/dashboard/activity',
 		icon: <HistoryIcon />,
 	},
 	// {
@@ -56,7 +56,7 @@ export const navLinks = [
 	// },
 	{
 		name: 'VirusTotal',
-		to: '/dashboard/virustotal',
+		// to: '/dashboard/virustotal',
 		icon: <CoronavirusIcon />,
 	},
 	{

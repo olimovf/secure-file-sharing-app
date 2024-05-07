@@ -17,12 +17,24 @@ import {
 	useMediaQuery,
 } from '@mui/material';
 import { navLinks } from './navLinks';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import Avatar from '../../components/Avatar';
+import { useSendLogoutMutation } from '../../features/auth/authApiSlice';
+import useAuth from '../../hooks/useAuth';
+import { ROLES } from '../../utils/constants';
 
 const Dashboard = () => {
+	const [sendLogout] = useSendLogoutMutation();
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await sendLogout({}).unwrap();
+		navigate('/login');
+	};
+
 	const [open, setOpen] = useState(true);
 	const matches = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+	const { roles } = useAuth();
 
 	useEffect(() => {
 		if (matches) {
@@ -76,17 +88,9 @@ const Dashboard = () => {
 				</DrawerHeader>
 				<Divider />
 				<List sx={{ py: 0 }}>
-					{navLinks.map(({ name, to, icon }) => (
-						<ListItem key={name} disablePadding sx={{ display: 'block' }}>
-							<ListItemButton
-								sx={{
-									minHeight: 48,
-									justifyContent: open ? 'initial' : 'center',
-									px: 2.5,
-								}}
-								component={Link}
-								to={to}
-							>
+					{navLinks.map(({ name, to, icon }) => {
+						const txt = (
+							<>
 								<ListItemIcon
 									sx={{
 										minWidth: 0,
@@ -97,9 +101,78 @@ const Dashboard = () => {
 									{icon}
 								</ListItemIcon>
 								<ListItemText primary={name} sx={{ opacity: open ? 1 : 0 }} />
-							</ListItemButton>
-						</ListItem>
-					))}
+							</>
+						);
+
+						if (name === 'Logout') {
+							return (
+								<ListItem key={name} disablePadding sx={{ display: 'block' }}>
+									<ListItemButton
+										sx={{
+											minHeight: 48,
+											justifyContent: open ? 'initial' : 'center',
+											px: 2.5,
+										}}
+										onClick={handleLogout}
+									>
+										{txt}
+									</ListItemButton>
+								</ListItem>
+							);
+						}
+
+						if (!to) {
+							return (
+								<ListItem key={name} disablePadding sx={{ display: 'block' }}>
+									<ListItemButton
+										sx={{
+											minHeight: 48,
+											justifyContent: open ? 'initial' : 'center',
+											px: 2.5,
+										}}
+									>
+										{txt}
+									</ListItemButton>
+								</ListItem>
+							);
+						}
+
+						if (name === 'Users') {
+							if (roles.includes(ROLES.admin)) {
+								return (
+									<ListItem key={name} disablePadding sx={{ display: 'block' }}>
+										<ListItemButton
+											sx={{
+												minHeight: 48,
+												justifyContent: open ? 'initial' : 'center',
+												px: 2.5,
+											}}
+											component={Link}
+											to={to}
+										>
+											{txt}
+										</ListItemButton>
+									</ListItem>
+								);
+							} else return;
+						}
+
+						return (
+							<ListItem key={name} disablePadding sx={{ display: 'block' }}>
+								<ListItemButton
+									sx={{
+										minHeight: 48,
+										justifyContent: open ? 'initial' : 'center',
+										px: 2.5,
+									}}
+									component={Link}
+									to={to}
+								>
+									{txt}
+								</ListItemButton>
+							</ListItem>
+						);
+					})}
 				</List>
 			</Drawer>
 			<Main

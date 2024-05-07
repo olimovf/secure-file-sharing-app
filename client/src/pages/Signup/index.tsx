@@ -1,19 +1,10 @@
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import { Button, Grid, TextField, Typography, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FormWrapper } from './style';
 import GlobalContainer from '../../components/GlobalContainer';
 import { useForm } from 'react-hook-form';
 import { useAddNewUserMutation } from '../../features/users/usersApiSlice';
 import notify from '../../utils/notify';
-
-const inputStyles = {
-	'& .MuiInputBase-input:-webkit-autofill': {
-		WebkitBoxShadow: `0 0 0 100px #252525 inset !important`,
-	},
-	'& .MuiFormHelperText-root': {
-		margin: '4px',
-	},
-};
 
 type PasswordType = {
 	password: string;
@@ -45,6 +36,17 @@ const Signup = () => {
 			.catch((err) => {
 				notify(err?.data?.message || err?.message, 'error');
 			});
+	};
+
+	const theme = useTheme();
+
+	const inputStyles = {
+		'& .MuiInputBase-input:-webkit-autofill': {
+			WebkitBoxShadow: `0 0 0 100px ${theme.palette.mode === 'dark' ? '#252525' : '#fff'} inset !important`,
+		},
+		'& .MuiFormHelperText-root': {
+			margin: '4px',
+		},
 	};
 
 	return (

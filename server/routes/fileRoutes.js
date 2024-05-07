@@ -15,7 +15,7 @@ router
 	.post(
 		fileUpload({ createParentPath: true }),
 		filesPayloadExists,
-		fileExtLimiter(['.docx', '.pdf', '.pptx']),
+		fileExtLimiter(['.docx', '.doc', '.pdf']),
 		fileSizeLimiter,
 		fileController.uploadFiles,
 	);

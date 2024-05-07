@@ -4,21 +4,13 @@ import {
 	Button,
 	Autocomplete,
 	TextField,
+	useTheme,
 } from '@mui/material';
 import { useAddNewUserMutation } from '../../features/users/usersApiSlice';
 import { useNavigate } from 'react-router-dom';
 import notify from '../../utils/notify';
 import { useForm, Controller } from 'react-hook-form';
 import { ROLES } from '../../utils/constants';
-
-const inputStyles = {
-	'& .MuiInputBase-input:-webkit-autofill': {
-		WebkitBoxShadow: `0 0 0 100px #252525 inset !important`,
-	},
-	'& .MuiFormHelperText-root': {
-		margin: '4px',
-	},
-};
 
 type FormValuesType = Omit<UserType, '_id' | 'verified'>;
 
@@ -49,6 +41,17 @@ const NewUser = () => {
 					navigate('/dashboard/users');
 				}, 2000);
 			});
+	};
+
+	const theme = useTheme();
+
+	const inputStyles = {
+		'& .MuiInputBase-input:-webkit-autofill': {
+			WebkitBoxShadow: `0 0 0 100px ${theme.palette.mode === 'dark' ? '#252525' : '#fff'} inset !important`,
+		},
+		'& .MuiFormHelperText-root': {
+			margin: '4px',
+		},
 	};
 
 	return (

@@ -4,6 +4,7 @@ import {
 	TextField,
 	Autocomplete,
 	Button,
+	useTheme,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -62,6 +63,17 @@ const EditUser = () => {
 		}
 	}, [user, setValue]);
 
+	const theme = useTheme();
+
+	const inputStyles = {
+		'& .MuiInputBase-input:-webkit-autofill': {
+			WebkitBoxShadow: `0 0 0 100px ${theme.palette.mode === 'dark' ? '#252525' : '#fff'} inset !important`,
+		},
+		'& .MuiFormHelperText-root': {
+			margin: '4px',
+		},
+	};
+
 	return (
 		<Box>
 			<Typography variant='h4'>Edit User</Typography>
@@ -94,11 +106,7 @@ const EditUser = () => {
 						})}
 						error={!!errors.firstName}
 						helperText={errors.firstName?.message}
-						sx={{
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 					/>
 				</div>
 
@@ -123,11 +131,7 @@ const EditUser = () => {
 						})}
 						error={!!errors.lastName}
 						helperText={errors.lastName?.message}
-						sx={{
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 					/>
 				</div>
 
@@ -157,11 +161,7 @@ const EditUser = () => {
 						})}
 						error={!!errors.email}
 						helperText={errors.email?.message}
-						sx={{
-							'& .MuiFormHelperText-root': {
-								margin: '4px',
-							},
-						}}
+						sx={inputStyles}
 					/>
 				</div>
 
@@ -192,11 +192,7 @@ const EditUser = () => {
 										placeholder='Select the roles'
 										error={!!errors.roles}
 										helperText={errors.roles?.message}
-										sx={{
-											'& .MuiFormHelperText-root': {
-												margin: '4px',
-											},
-										}}
+										sx={inputStyles}
 									/>
 								)}
 							/>

@@ -14,15 +14,13 @@ const fileSchema = new mongoose.Schema(
 			type: Number,
 			required: true,
 		},
-		password: {
-			type: String,
-		},
-		expirationTime: {
-			type: Date,
-		},
 		createdBy: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
+			ref: 'User',
+		},
+		sharedBy: {
+			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 		},
 		sharedWith: [

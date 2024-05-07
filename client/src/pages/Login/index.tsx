@@ -1,4 +1,4 @@
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import { Button, Grid, TextField, Typography, useTheme } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormWrapper } from './style';
 import { useEffect } from 'react';
@@ -14,20 +14,21 @@ type FormValuesType = {
 	password: string;
 };
 
-const inputStyles = {
-	'& .MuiInputBase-input:-webkit-autofill': {
-		WebkitBoxShadow: `0 0 0 100px #252525 inset !important`,
-	},
-	'& .MuiFormHelperText-root': {
-		margin: '4px',
-	},
-};
-
 const Login = () => {
 	const [login, { isLoading, isError, error, reset }] =
 		useLoginMutation<MutationType>();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const theme = useTheme();
+
+	const inputStyles = {
+		'& .MuiInputBase-input:-webkit-autofill': {
+			WebkitBoxShadow: `0 0 0 100px ${theme.palette.mode === 'dark' ? '#252525' : '#fff'} inset !important`,
+		},
+		'& .MuiFormHelperText-root': {
+			margin: '4px',
+		},
+	};
 
 	const {
 		register,

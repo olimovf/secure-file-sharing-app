@@ -69,9 +69,9 @@ const Users = () => {
 		<>
 			<Box display={'flex'} justifyContent={'space-between'} gap={2}>
 				<Typography variant='h4'>Users</Typography>
-				<Button size='small' component={Link} to='/dashboard/users/new'>
+				{/* <Button size='small' component={Link} to='/dashboard/users/new'>
 					Add new user
-				</Button>
+				</Button> */}
 			</Box>
 
 			{usersLoading ? (

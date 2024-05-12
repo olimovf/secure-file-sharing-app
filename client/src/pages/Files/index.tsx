@@ -25,6 +25,8 @@ const Files = () => {
 			formData.append('files', file);
 		}
 
+		formData.append('userTo', '6640b503973ef2d67d89bd86');
+
 		await uploadFiles(formData)
 			.unwrap()
 			.then((data) => {

@@ -1,5 +1,5 @@
 import { Button, Grid, TextField, Typography, useTheme } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FormWrapper } from './style';
 import GlobalContainer from '../../components/GlobalContainer';
 import { useForm } from 'react-hook-form';
@@ -14,10 +14,10 @@ type FormValuesType = Omit<UserType, '_id' | 'verified' | 'roles'> &
 	PasswordType;
 
 const Signup = () => {
+	const navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
-		reset,
 		formState: { errors },
 	} = useForm<FormValuesType>();
 
@@ -30,7 +30,7 @@ const Signup = () => {
 			.then((data) => {
 				notify(data?.message, 'success');
 				setTimeout(() => {
-					reset();
+					navigate('/login');
 				}, 2000);
 			})
 			.catch((err) => {

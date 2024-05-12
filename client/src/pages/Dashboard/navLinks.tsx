@@ -2,7 +2,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import FolderIcon from '@mui/icons-material/Folder';
 import SharedByMeIcon from '@mui/icons-material/FileUpload';
 import SharedWithMeIcon from '@mui/icons-material/FileDownload';
-// import ShareIcon from '@mui/icons-material/Share';
+import ShareIcon from '@mui/icons-material/Share';
 import HistoryIcon from '@mui/icons-material/History';
 // import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
@@ -15,15 +15,15 @@ import UsersIcon from '@mui/icons-material/People';
 
 export const navLinks = [
 	{
-		name: 'Home',
+		name: 'Share files',
 		to: '/dashboard',
-		icon: <HomeIcon />,
+		icon: <ShareIcon />,
 	},
-	{
-		name: 'My Files',
-		to: '/dashboard/files',
-		icon: <FolderIcon />,
-	},
+	// {
+	// 	name: 'My Files',
+	// 	to: '/dashboard/files',
+	// 	icon: <FolderIcon />,
+	// },
 	{
 		name: 'Users',
 		to: '/dashboard/users',

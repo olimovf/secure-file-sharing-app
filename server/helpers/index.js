@@ -1,3 +1,4 @@
+const fs = require('fs');
 const nodemailer = require('nodemailer');
 
 const addTimestampToFileName = (fileName) => {
@@ -70,9 +71,27 @@ const sendInvitationEmail = async (user) => {
 	transporter.sendMail(mailOptions);
 };
 
+const deleteDirectoryRecursive = (path) => {
+	if (fs.existsSync(path)) {
+		fs.readdirSync(path).forEach(function (file) {
+			const curPath = path + '/' + file;
+			if (fs.lstatSync(curPath).isDirectory()) {
+				deleteDirectoryRecursive(curPath);
+			} else {
+				fs.unlinkSync(curPath);
+			}
+		});
+		fs.rmdirSync(path);
+		console.log(`Directory ${path} deleted successfully.`);
+	} else {
+		console.log(`Directory ${path} does not exist.`);
+	}
+};
+
 module.exports = {
 	addTimestampToFileName,
 	removeTimestampFromFileName,
 	sendVerificationEmail,
 	sendInvitationEmail,
+	deleteDirectoryRecursive,
 };

@@ -1,10 +1,16 @@
 const User = require('../models/User');
+const KMS = require('../models/KMS');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const { sendVerificationEmail, sendInvitationEmail } = require('../helpers');
-
-const VERIFICATION_TOKEN_EXPIRES_AT = 1; // in hours
+const { generateDHParams } = require('../helpers/dh');
+const {
+	ENCODING_TYPE,
+	VERIFICATION_TOKEN_EXPIRES_AT,
+} = require('../helpers/constants');
+const { encryptText } = require('../helpers/encryption');
+const crypto = require('crypto');
 
 // @desc Get all users
 // @route GET /users
@@ -34,8 +40,6 @@ const createNewUser = asyncHandler(async (req, res) => {
 		type = 'register',
 	} = req.body;
 
-	console.log(req.body);
-
 	// confirm data
 	if (!firstName || !lastName || !email || (type === 'register' && !password)) {
 		return res.status(400).json({ message: 'All fields are required' });
@@ -60,10 +64,13 @@ const createNewUser = asyncHandler(async (req, res) => {
 		Date.now() + VERIFICATION_TOKEN_EXPIRES_AT * 60 * 60 * 1000,
 	);
 
+	const { publicKey, privateKey, generator, prime } = generateDHParams();
+
 	const userObject = {
 		firstName,
 		lastName,
 		email,
+		publicKey,
 		password: hashedPwd,
 		token: hashedToken,
 		tokenExpiresAt,
@@ -75,6 +82,16 @@ const createNewUser = asyncHandler(async (req, res) => {
 
 	// create and store user
 	const user = await User.create(userObject);
+
+	// save user's private keys on KMS
+	const secret = { prime, generator, privateKey };
+	const iv = crypto.randomBytes(16).toString(ENCODING_TYPE);
+
+	const kms = await KMS.create({
+		userId: user?._id,
+		params: encryptText(JSON.stringify(secret), iv),
+		iv,
+	});
 
 	if (user) {
 		if (type === 'invitation') {
@@ -151,15 +168,11 @@ const updateUser = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
 	const { id } = req.body;
+	const authenticatedUserId = req?.user?.id;
 
 	if (!id) {
 		return res.status(400).json({ message: 'User ID required' });
 	}
-
-	// const note = await Note.findOne({ user: id }).lean().exec();
-	// if (note) {
-	// 	return res.status(400).json({ message: 'User has assigned notes' });
-	// }
 
 	const user = await User.findById(id).exec();
 	if (!user) {
@@ -167,6 +180,14 @@ const deleteUser = asyncHandler(async (req, res) => {
 	}
 
 	await user.deleteOne();
+	const kms = await KMS.findOne({ userId: id }).lean().exec();
+	if (kms) {
+		await kms.deleteOne();
+	}
+
+	// if (id === authenticatedUserId) {
+	// 	return res.redirect('/login');
+	// }
 
 	res.json({ message: 'User deleted succesfully' });
 });

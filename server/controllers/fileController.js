@@ -6,7 +6,15 @@ const {
 	addTimestampToFileName,
 	removeTimestampFromFileName,
 } = require('../helpers');
-const MAX_FILE_NAME_LENGTH = 64;
+const {
+	decryptFile,
+	encryptFile,
+	decryptText,
+} = require('../helpers/encryption');
+const KMS = require('../models/KMS');
+const { setDHParams } = require('../helpers/dh');
+const { MAX_FILE_NAME_LENGTH, ENCODING_TYPE } = require('../helpers/constants');
+const User = require('../models/User');
 
 // @desc File upload
 // @route POST /files/upload
@@ -15,11 +23,32 @@ const MAX_FILE_NAME_LENGTH = 64;
 const uploadFiles = asyncHandler(async (req, res) => {
 	let files = req.files.files;
 	files = Array.isArray(files) ? files : [files];
+	const userToId = req.body?.userTo;
+
+	const userTo = await User.findById(userToId).exec();
+	const publicKey = userTo?.publicKey;
+
+	const userId = req?.user?.id;
+	const kms = await KMS.findOne({ userId }).lean().exec();
+	const secret = JSON.parse(decryptText(kms?.params, kms?.iv));
+
+	console.log(secret);
+
+	const dh = setDHParams(secret);
+	const sharedSecret = dh.computeSecret(publicKey, null, ENCODING_TYPE);
+	console.log({ sharedSecret });
 
 	const uploadPromises = files.map(async (file) => {
 		file.name = addTimestampToFileName(file.name);
+		const encryptedBuffer = encryptFile(file, sharedSecret);
 
-		await file.mv(path.resolve(__dirname, '..', 'files', file.name));
+		const dirPath = path.resolve(__dirname, '..', 'files');
+		if (!fs.existsSync(dirPath)) {
+			fs.mkdirSync(dirPath, { recursive: true });
+		}
+
+		const outputFilePath = path.resolve(dirPath, file.name);
+		fs.writeFileSync(outputFilePath, encryptedBuffer);
 
 		const newFile = new File({
 			name: file.name,
@@ -34,7 +63,7 @@ const uploadFiles = asyncHandler(async (req, res) => {
 	await Promise.all(uploadPromises);
 
 	return res.status(200).json({
-		message: `${files.length === 1 ? 'File' : 'Files'} uploaded successfully`,
+		message: `${files.length === 1 ? 'File' : 'Files'} sent successfully`,
 	});
 });
 
@@ -47,9 +76,7 @@ const getFiles = asyncHandler(async (req, res) => {
 		.select('-originalName')
 		.lean()
 		.exec();
-	// if (!files?.length) {
-	// 	return res.status(400).json({ message: 'No files found' });
-	// }
+
 	files = files.map((file) => {
 		return {
 			...file,
@@ -80,7 +107,26 @@ const downloadFile = asyncHandler(async (req, res) => {
 		return res.status(404).json({ message: 'File not found on server' });
 	}
 
-	res.download(filePath, file.name);
+	const buffer = decryptFile(filePath);
+	res.end(buffer);
+
+	// console.log(file.originalName.lastIndexOf('.'));
+
+	// const contentType = {
+	// 	'.pdf': 'application/pdf',
+	// 	'.doc': 'application/msword',
+	// 	'.docx':
+	// 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	// };
+
+	// res.set({
+	// 	'Content-Type': 'application/msword',
+	// 	'Content-Disposition': 'attachment; filename=name.pdf',
+	// });
+
+	// console.log(buffer);
+
+	// res.download(buffer, file.name);
 });
 
 // @desc Delete a file

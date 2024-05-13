@@ -32,15 +32,13 @@ const uploadFiles = asyncHandler(async (req, res) => {
 	const kms = await KMS.findOne({ userId }).lean().exec();
 	const secret = JSON.parse(decryptText(kms?.params, kms?.iv));
 
-	console.log(secret);
-
 	const dh = setDHParams(secret);
-	const sharedSecret = dh.computeSecret(publicKey, null, ENCODING_TYPE);
-	console.log({ sharedSecret });
+	let sharedSecret = dh.computeSecret(publicKey, null, ENCODING_TYPE);
+	sharedSecret = Buffer.from(sharedSecret, ENCODING_TYPE).toString('hex');
 
 	const uploadPromises = files.map(async (file) => {
 		file.name = addTimestampToFileName(file.name);
-		const encryptedBuffer = encryptFile(file, sharedSecret);
+		const encryptedBuffer = encryptFile(file, sharedSecret.slice(0, 64));
 
 		const dirPath = path.resolve(__dirname, '..', 'files');
 		if (!fs.existsSync(dirPath)) {
@@ -54,7 +52,9 @@ const uploadFiles = asyncHandler(async (req, res) => {
 			name: file.name,
 			originalName: file.name,
 			size: file.size,
-			createdBy: req?.user?.id,
+			createdBy: userId,
+			sharedBy: userId,
+			sharedWith: userTo,
 		});
 
 		await newFile.save();
@@ -72,10 +72,7 @@ const uploadFiles = asyncHandler(async (req, res) => {
 // @access Private
 
 const getFiles = asyncHandler(async (req, res) => {
-	let files = await File.find({ createdBy: req?.user?.id })
-		.select('-originalName')
-		.lean()
-		.exec();
+	let files = await File.find({}).select('-originalName').lean().exec();
 
 	files = files.map((file) => {
 		return {
@@ -107,7 +104,10 @@ const downloadFile = asyncHandler(async (req, res) => {
 		return res.status(404).json({ message: 'File not found on server' });
 	}
 
-	const buffer = decryptFile(filePath);
+	const buffer = decryptFile(
+		filePath,
+		'bee82c03f00e79790c0b95503443a92aed6777105fd2972103b71226d72a3e64',
+	);
 	res.end(buffer);
 
 	// console.log(file.originalName.lastIndexOf('.'));

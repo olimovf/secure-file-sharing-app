@@ -10,7 +10,7 @@ import { useGetUsersQuery } from '../../features/users/usersApiSlice';
 
 const Avatar = () => {
 	const { id } = useAuth();
-	const { user }: { user: UserType } = useGetUsersQuery('usersList', {
+	const { user } = useGetUsersQuery('usersList', {
 		selectFromResult: ({ data }) => ({
 			user: data?.find((user: UserType) => user._id === id),
 		}),
@@ -49,7 +49,9 @@ const Avatar = () => {
 					aria-haspopup='true'
 					aria-expanded={open ? 'true' : undefined}
 				>
-					<StyledAvatar>{`${user?.firstName?.[0]}${user?.lastName?.[0]}`}</StyledAvatar>
+					<StyledAvatar>
+						{!user ? null : `${user?.firstName?.[0]}${user?.lastName?.[0]}`}
+					</StyledAvatar>
 				</IconButton>
 				<Typography variant='subtitle1'>{user?.firstName}</Typography>
 			</AvatarWrapper>

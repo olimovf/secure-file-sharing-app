@@ -99,7 +99,7 @@ const Home = () => {
 							<Box
 								{...getRootProps()}
 								sx={{
-									border: '1px dashed',
+									border: `2px dashed ${theme.palette.primary.main}`,
 									borderRadius: 1,
 									p: 4,
 									my: 2,

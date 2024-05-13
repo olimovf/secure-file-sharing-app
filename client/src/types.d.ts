@@ -16,7 +16,8 @@ type FileType = {
 	password?: string;
 	expirationTime?: string;
 	createdBy: string;
-	sharedWith: string[];
+	sharedBy: string;
+	sharedWith: string;
 };
 
 type UserType = {

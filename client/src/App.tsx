@@ -13,6 +13,8 @@ import { ROLES } from './utils/constants';
 import NewUser from './pages/Users/NewUser';
 import Profile from './pages/Profile';
 import Verification from './pages/Verification';
+import SharedByMe from './pages/SharedByMe';
+import SharedWithMe from './pages/SharedWithMe';
 
 const App = () => {
 	return (
@@ -33,6 +35,8 @@ const App = () => {
 								<Route path='new' element={<NewUser />} />
 							</Route>
 							<Route path='profile' element={<Profile />} />
+							<Route path='shared-by-me' element={<SharedByMe />} />
+							<Route path='shared-with-me' element={<SharedWithMe />} />
 						</Route>
 					</Route>
 				</Route>

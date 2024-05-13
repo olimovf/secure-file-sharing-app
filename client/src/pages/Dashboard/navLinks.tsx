@@ -31,12 +31,12 @@ export const navLinks = [
 	},
 	{
 		name: 'Shared by Me',
-		to: '/dashboard/files',
+		to: '/dashboard/shared-by-me',
 		icon: <SharedByMeIcon />,
 	},
 	{
 		name: 'Shared with Me',
-		to: '/dashboard/files',
+		to: '/dashboard/shared-with-me',
 		icon: <SharedWithMeIcon />,
 	},
 	{

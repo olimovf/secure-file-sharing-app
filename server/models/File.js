@@ -23,12 +23,10 @@ const fileSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 		},
-		sharedWith: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'User',
-			},
-		],
+		sharedWith: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User',
+		},
 	},
 	{
 		timestamps: true,

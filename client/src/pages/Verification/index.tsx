@@ -43,7 +43,7 @@ const Verification = () => {
 					alignItems: 'center',
 				}}
 			>
-				{isError ? (
+				{isLoading ? null : isError ? (
 					<NewReleasesIcon color='error' sx={{ fontSize: '80px' }} />
 				) : (
 					<VerifiedIcon color='success' sx={{ fontSize: '80px' }} />

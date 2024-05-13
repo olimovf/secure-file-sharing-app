@@ -14,7 +14,7 @@ import {
 	useGetUsersQuery,
 } from '../../features/users/usersApiSlice';
 import { loadColumns } from './configureUserTableCols';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import notify from '../../utils/notify';
 import { PulseLoader } from 'react-spinners';

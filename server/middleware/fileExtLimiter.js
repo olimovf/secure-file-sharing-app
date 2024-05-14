@@ -15,11 +15,10 @@ const fileExtLimiter = (allowedExtArray) => {
 		);
 
 		if (!allowed) {
-			const message =
-				`Upload failed. Only ${allowedExtArray.toString()} files allowed.`.replaceAll(
-					',',
-					', ',
-				);
+			const message = `Upload failed. Invalid file type received`.replaceAll(
+				',',
+				', ',
+			);
 
 			return res.status(422).json({ message });
 		}

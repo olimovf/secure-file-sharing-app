@@ -20,8 +20,8 @@ app.use(cookieParser());
 
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/users', require('./routes/userRoutes'));
-
 app.use('/files', require('./routes/fileRoutes'));
+app.use('/activity', require('./routes/activityRoutes'));
 
 app.get('/wipe-files', (req, res, next) => {
 	const directoryPath = path.join(__dirname, 'files');

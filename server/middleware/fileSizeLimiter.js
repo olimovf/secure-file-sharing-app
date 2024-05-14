@@ -1,5 +1,4 @@
-const MB = 5; // 5 MB
-const FILE_SIZE_LIMIT = MB * 1024 * 1024;
+const { FILE_SIZE_LIMIT, MB } = require('../helpers/constants');
 
 const fileSizeLimiter = (req, res, next) => {
 	let files = req.files.files;

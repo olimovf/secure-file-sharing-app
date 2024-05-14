@@ -29,6 +29,15 @@ type UserType = {
 	verified?: boolean;
 };
 
+type ActivityType = {
+	_id: string;
+	userId: string;
+	ip: string;
+	action: string;
+	status: string;
+	createdAt: string;
+};
+
 type AuthStateType = {
 	token: string | null;
 };

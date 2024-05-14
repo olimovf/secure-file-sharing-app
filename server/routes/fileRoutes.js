@@ -7,6 +7,7 @@ const fileExtLimiter = require('../middleware/fileExtLimiter');
 const fileSizeLimiter = require('../middleware/fileSizeLimiter');
 const filesPayloadExists = require('../middleware/filesPayloadExists');
 const verifyJWT = require('../middleware/verifyJWT');
+const { ALLOWED_FILE_TYPES } = require('../helpers/constants');
 
 router.use(verifyJWT);
 
@@ -15,7 +16,7 @@ router
 	.post(
 		fileUpload({ createParentPath: true }),
 		filesPayloadExists,
-		fileExtLimiter(['.docx', '.doc', '.pdf', '.xlsx', '.xls', '.pptx', '.ppt']),
+		fileExtLimiter(ALLOWED_FILE_TYPES),
 		fileSizeLimiter,
 		fileController.uploadFiles,
 	);

@@ -46,7 +46,7 @@ export const navLinks = [
 	},
 	{
 		name: 'Activity',
-		// to: '/dashboard/activity',
+		to: '/dashboard/activity',
 		icon: <HistoryIcon />,
 	},
 	// {

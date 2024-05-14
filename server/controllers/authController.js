@@ -2,6 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
+const { saveActivity } = require('../helpers');
+const requestIp = require('request-ip');
 
 // @desc Login
 // @route POST /auth
@@ -19,7 +21,17 @@ const login = asyncHandler(async (req, res) => {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 
+	const clientIp = requestIp.getClientIp(req);
+	console.log({ clientIp });
+
 	if (!foundUser.verified) {
+		await saveActivity({
+			userId: foundUser._id,
+			ip: req.ip,
+			action: 'LOGIN',
+			status: 'fail',
+		});
+
 		return res.status(401).json({
 			message: 'Your email has not been verified yet',
 		});
@@ -27,8 +39,23 @@ const login = asyncHandler(async (req, res) => {
 
 	const match = await bcrypt.compare(password, foundUser.password);
 
-	if (!match)
+	if (!match) {
+		await saveActivity({
+			userId: foundUser._id,
+			ip: req.ip,
+			action: 'LOGIN',
+			status: 'fail',
+		});
+
 		return res.status(401).json({ message: 'Incorrect email or password' });
+	}
+
+	await saveActivity({
+		userId: foundUser._id,
+		ip: req.ip,
+		action: 'LOGIN',
+		status: 'success',
+	});
 
 	const accessToken = jwt.sign(
 		{
@@ -98,10 +125,16 @@ const refresh = (req, res) => {
 // @desc Logout
 // @route POST /auth/logout
 // @access Public - just to clear cookie if exists
-const logout = (req, res) => {
+const logout = async (req, res) => {
 	const cookies = req.cookies;
 	if (!cookies?.jwt) return res.sendStatus(204); //No content
 	res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+	await saveActivity({
+		userId: req?.user?.id,
+		ip: req.ip,
+		action: 'LOGOUT',
+		status: 'success',
+	});
 	res.json({ message: 'Cookie cleared' });
 };
 

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const Activity = require('../models/Activity');
 
 const addTimestampToFileName = (fileName) => {
 	const timestamp = Date.now().toString();
@@ -88,10 +89,16 @@ const deleteDirectoryRecursive = (path) => {
 	}
 };
 
+const saveActivity = async ({ userId, ip, action, status, reason }) => {
+	const activity = new Activity({ userId, ip, action, status, reason });
+	await activity.save();
+};
+
 module.exports = {
 	addTimestampToFileName,
 	removeTimestampFromFileName,
 	sendVerificationEmail,
 	sendInvitationEmail,
 	deleteDirectoryRecursive,
+	saveActivity,
 };

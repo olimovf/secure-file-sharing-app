@@ -7,6 +7,7 @@ import {
 	DialogActions,
 	Button,
 	Divider,
+	useTheme,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import {
@@ -65,6 +66,8 @@ const Users = () => {
 		setOpen(false);
 	};
 
+	const theme = useTheme();
+
 	return (
 		<>
 			<Box display={'flex'} justifyContent={'space-between'} gap={2}>
@@ -75,7 +78,7 @@ const Users = () => {
 			</Box>
 
 			{usersLoading ? (
-				<PulseLoader color={'#FFF'} />
+				<PulseLoader color={theme.palette.primary.main} />
 			) : (
 				<Box sx={{ width: '100%', mt: 2 }}>
 					<DataGrid

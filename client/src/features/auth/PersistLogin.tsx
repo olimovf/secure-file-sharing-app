@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectCurrentToken } from './authSlice';
 import { Outlet, Link } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 
 type UseRefreshMutationType = {
 	isUninitialized: boolean;
@@ -24,6 +24,7 @@ const PersistLogin = () => {
 	const [persist] = usePersist();
 	const token = useSelector(selectCurrentToken);
 	const effectRan = useRef(false);
+	const theme = useTheme();
 
 	const [trueSuccess, setTrueSuccess] = useState(false);
 
@@ -59,11 +60,11 @@ const PersistLogin = () => {
 
 	if (!persist) {
 		// persist: no
-		console.log('no persist');
+		// console.log('no persist');
 		content = <Outlet />;
 	} else if (isLoading) {
 		// persist: yes, token: no
-		console.log('loading');
+		// console.log('loading');
 		content = (
 			<Box
 				display={'flex'}
@@ -71,12 +72,12 @@ const PersistLogin = () => {
 				alignItems={'center'}
 				minHeight={'100vh'}
 			>
-				<PulseLoader color={'#FFF'} />
+				<PulseLoader color={theme.palette.primary.main} />
 			</Box>
 		);
 	} else if (isError) {
 		// persist: yes, token: no
-		console.log('error', error);
+		// console.log('error', error);
 		content = (
 			<p className='errmsg'>
 				{`${error?.data?.message || 'Something went wrong'} - `}
@@ -85,12 +86,12 @@ const PersistLogin = () => {
 		);
 	} else if (isSuccess && trueSuccess) {
 		// persist: yes, token: yes
-		console.log('success');
+		// console.log('success');
 		content = <Outlet />;
 	} else if (token && isUninitialized) {
 		// persist: yes, token: yes
-		console.log('token and uninit');
-		console.log(isUninitialized);
+		// console.log('token and uninit');
+		// console.log(isUninitialized);
 		content = <Outlet />;
 	}
 

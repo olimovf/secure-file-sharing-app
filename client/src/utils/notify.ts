@@ -14,7 +14,7 @@ const notify = (
 		hideProgressBar: false,
 		closeOnClick: true,
 		draggable: true,
-		theme: 'dark',
+		theme: localStorage.getItem('mode')!,
 		...options,
 	};
 

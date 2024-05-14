@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const asyncHandler = require('express-async-handler');
 const File = require('../models/File');
 const {
@@ -33,12 +34,16 @@ const uploadFiles = asyncHandler(async (req, res) => {
 	const secret = JSON.parse(decryptText(kms?.params, kms?.iv));
 
 	const dh = setDHParams(secret);
-	let sharedSecret = dh.computeSecret(publicKey, null, ENCODING_TYPE);
-	sharedSecret = Buffer.from(sharedSecret, ENCODING_TYPE).toString('hex');
+	const sharedSecret = dh.computeSecret(
+		Buffer.from(publicKey, ENCODING_TYPE),
+		null,
+		ENCODING_TYPE,
+	);
 
 	const uploadPromises = files.map(async (file) => {
 		file.name = addTimestampToFileName(file.name);
-		const encryptedBuffer = encryptFile(file, sharedSecret.slice(0, 64));
+		const iv = crypto.randomBytes(16).toString(ENCODING_TYPE);
+		const encryptedBuffer = encryptFile(file, sharedSecret.slice(0, 64), iv);
 
 		const dirPath = path.resolve(__dirname, '..', 'files');
 		if (!fs.existsSync(dirPath)) {
@@ -55,6 +60,7 @@ const uploadFiles = asyncHandler(async (req, res) => {
 			createdBy: userId,
 			sharedBy: userId,
 			sharedWith: userTo,
+			iv,
 		});
 
 		await newFile.save();
@@ -72,7 +78,20 @@ const uploadFiles = asyncHandler(async (req, res) => {
 // @access Private
 
 const getFiles = asyncHandler(async (req, res) => {
-	let files = await File.find({}).select('-originalName').lean().exec();
+	const userId = req?.user?.id;
+	let files = await File.find({
+		$or: [
+			{
+				sharedBy: userId,
+			},
+			{
+				sharedWith: userId,
+			},
+		],
+	})
+		.select('-originalName')
+		.lean()
+		.exec();
 
 	files = files.map((file) => {
 		return {
@@ -89,6 +108,8 @@ const getFiles = asyncHandler(async (req, res) => {
 // @access Private
 
 const downloadFile = asyncHandler(async (req, res) => {
+	const userId = req?.user?.id;
+
 	const id = req.query?.id;
 	if (!id) {
 		return res.status(400).json({ message: 'File ID is required' });
@@ -104,13 +125,29 @@ const downloadFile = asyncHandler(async (req, res) => {
 		return res.status(404).json({ message: 'File not found on server' });
 	}
 
-	const buffer = decryptFile(
-		filePath,
-		'bee82c03f00e79790c0b95503443a92aed6777105fd2972103b71226d72a3e64',
-	);
-	res.end(buffer);
+	const iv = file?.iv;
+	let publicKey;
+	if (file?.sharedBy.toString() === userId) {
+		const userFrom = await User.findById(file?.sharedWith).exec();
+		publicKey = userFrom?.publicKey;
+	} else {
+		const userFrom = await User.findById(file?.sharedBy).exec();
+		publicKey = userFrom?.publicKey;
+	}
 
-	// console.log(file.originalName.lastIndexOf('.'));
+	const kms = await KMS.findOne({ userId }).lean().exec();
+	const secret = JSON.parse(decryptText(kms?.params, kms?.iv));
+
+	const dh = setDHParams(secret);
+	const sharedSecret = dh.computeSecret(
+		Buffer.from(publicKey, ENCODING_TYPE),
+		null,
+		ENCODING_TYPE,
+	);
+
+	const buffer = decryptFile(filePath, sharedSecret.slice(0, 64), iv);
+
+	res.end(buffer);
 
 	// const contentType = {
 	// 	'.pdf': 'application/pdf',

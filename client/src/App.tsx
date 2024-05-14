@@ -4,7 +4,6 @@ import Login from './pages/Login';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
-import Files from './pages/Files';
 import PersistLogin from './features/auth/PersistLogin';
 import RequireAuth from './features/auth/RequireAuth';
 import Users from './pages/Users';
@@ -28,7 +27,6 @@ const App = () => {
 					<Route element={<RequireAuth allowedRoles={Object.values(ROLES)} />}>
 						<Route path='dashboard' element={<Dashboard />}>
 							<Route index element={<Home />} />
-							<Route path='files' element={<Files />} />
 							<Route path='users'>
 								<Route index element={<Users />} />
 								<Route path=':id' element={<EditUser />} />

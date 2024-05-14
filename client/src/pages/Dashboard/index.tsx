@@ -15,6 +15,7 @@ import {
 	Toolbar,
 	Typography,
 	useMediaQuery,
+	useTheme,
 } from '@mui/material';
 import { navLinks } from './navLinks';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
@@ -51,6 +52,12 @@ const Dashboard = () => {
 	const handleDrawerClose = () => {
 		setOpen(false);
 	};
+
+	const theme = useTheme();
+	const activeColor = theme.palette.mode === 'dark' ? '#252525' : '#d5d5d5';
+	const [selectedNavItem, setSelectedNavItem] = useState<string>(
+		navLinks[0].name,
+	);
 
 	return (
 		<Box sx={{ display: 'flex' }}>
@@ -89,6 +96,8 @@ const Dashboard = () => {
 				<Divider />
 				<List sx={{ py: 0 }}>
 					{navLinks.map(({ name, to, icon }) => {
+						const isSelected = selectedNavItem === name;
+
 						const txt = (
 							<>
 								<ListItemIcon
@@ -112,6 +121,10 @@ const Dashboard = () => {
 											minHeight: 48,
 											justifyContent: open ? 'initial' : 'center',
 											px: 2.5,
+											bgcolor: isSelected ? activeColor : 'inherit',
+											'&:hover': {
+												bgcolor: activeColor,
+											},
 										}}
 										onClick={handleLogout}
 									>
@@ -129,7 +142,12 @@ const Dashboard = () => {
 											minHeight: 48,
 											justifyContent: open ? 'initial' : 'center',
 											px: 2.5,
+											bgcolor: isSelected ? activeColor : 'inherit',
+											'&:hover': {
+												bgcolor: activeColor,
+											},
 										}}
+										onClick={() => setSelectedNavItem(name)}
 									>
 										{txt}
 									</ListItemButton>
@@ -146,9 +164,14 @@ const Dashboard = () => {
 												minHeight: 48,
 												justifyContent: open ? 'initial' : 'center',
 												px: 2.5,
+												bgcolor: isSelected ? activeColor : 'inherit',
+												'&:hover': {
+													bgcolor: activeColor,
+												},
 											}}
 											component={Link}
 											to={to}
+											onClick={() => setSelectedNavItem(name)}
 										>
 											{txt}
 										</ListItemButton>
@@ -164,9 +187,14 @@ const Dashboard = () => {
 										minHeight: 48,
 										justifyContent: open ? 'initial' : 'center',
 										px: 2.5,
+										bgcolor: isSelected ? activeColor : 'inherit',
+										'&:hover': {
+											bgcolor: activeColor,
+										},
 									}}
 									component={Link}
 									to={to}
+									onClick={() => setSelectedNavItem(name)}
 								>
 									{txt}
 								</ListItemButton>

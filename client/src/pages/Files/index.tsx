@@ -1,4 +1,4 @@
-import { Grid, Box, Typography, IconButton } from '@mui/material';
+import { Grid, Box, Typography, IconButton, useTheme } from '@mui/material';
 import FileUpload from '@mui/icons-material/FileUpload';
 import {
 	useGetFilesQuery,
@@ -37,6 +37,8 @@ const Files = () => {
 			});
 	};
 
+	const theme = useTheme();
+
 	return (
 		<>
 			<Box
@@ -62,7 +64,7 @@ const Files = () => {
 			<Grid container spacing={2}>
 				{filesLoading ? (
 					<Grid item xs={12}>
-						<PulseLoader color={'#FFF'} />
+						<PulseLoader color={theme.palette.primary.main} />
 					</Grid>
 				) : (
 					<>

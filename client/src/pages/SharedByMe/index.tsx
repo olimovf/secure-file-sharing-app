@@ -1,4 +1,4 @@
-import { Grid, Box, Typography } from '@mui/material';
+import { Grid, Box, Typography, useTheme } from '@mui/material';
 import { useGetFilesQuery } from '../../features/file/fileApiSlice';
 import File from '../../components/File';
 import { PulseLoader } from 'react-spinners';
@@ -10,6 +10,8 @@ const SharedByMe = () => {
 		'filesList',
 		{},
 	);
+
+	const theme = useTheme();
 
 	return (
 		<>
@@ -24,7 +26,7 @@ const SharedByMe = () => {
 			<Grid container spacing={2}>
 				{filesLoading ? (
 					<Grid item xs={12}>
-						<PulseLoader color={'#FFF'} />
+						<PulseLoader color={theme.palette.primary.main} />
 					</Grid>
 				) : (
 					<>

@@ -23,10 +23,14 @@ import useAuth from '../../hooks/useAuth';
 import { useState } from 'react';
 import notify from '../../utils/notify';
 import { useUploadFilesMutation } from '../../features/file/fileApiSlice';
+import { acceptedFileTypes } from '../../utils/constants';
 
 const Home = () => {
-	const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
-	const theme = useTheme();
+	const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+		accept: {
+			'application/pdf': acceptedFileTypes,
+		},
+	});
 	const { id } = useAuth();
 
 	const { data: users } = useGetUsersQuery('usersList', {});
@@ -77,6 +81,8 @@ const Home = () => {
 			});
 	};
 
+	const theme = useTheme();
+
 	return (
 		<>
 			<Typography variant='h4' sx={{ mb: 2 }}>
@@ -92,7 +98,7 @@ const Home = () => {
 									File type:
 								</Typography>
 								<Typography variant='body1' gutterBottom fontStyle={'italic'}>
-									.doc, .docx, .pdf
+									{acceptedFileTypes.join(', ')}
 								</Typography>
 							</Box>
 							<Divider />
@@ -128,7 +134,7 @@ const Home = () => {
 										secondaryAction={formatBytes(file.size)}
 									>
 										<ListItemAvatar>
-											<Avatar>
+											<Avatar sx={{ bgcolor: theme.palette.primary.light }}>
 												<FileIcon />
 											</Avatar>
 										</ListItemAvatar>

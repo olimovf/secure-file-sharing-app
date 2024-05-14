@@ -2,10 +2,10 @@ const crypto = require('crypto');
 const fs = require('fs');
 const { ENCODING_TYPE } = require('./constants');
 
-const encryptFile = (file, key, iv = 'jYoC6xdHTmBpRNGuZChGQw==') => {
+const encryptFile = (file, key, iv) => {
 	const cipher = crypto.createCipheriv(
 		process.env.ALGORITHM,
-		Buffer.from(key, 'hex'),
+		Buffer.from(key, ENCODING_TYPE),
 		Buffer.from(iv, ENCODING_TYPE),
 	);
 	const encryptedBuffer = Buffer.concat([
@@ -16,11 +16,11 @@ const encryptFile = (file, key, iv = 'jYoC6xdHTmBpRNGuZChGQw==') => {
 	return encryptedBuffer;
 };
 
-const decryptFile = (filePath, key, iv = 'jYoC6xdHTmBpRNGuZChGQw==') => {
+const decryptFile = (filePath, key, iv) => {
 	const encryptedBuffer = fs.readFileSync(filePath);
 	const decipher = crypto.createDecipheriv(
 		process.env.ALGORITHM,
-		Buffer.from(key, 'hex'),
+		Buffer.from(key, ENCODING_TYPE),
 		Buffer.from(iv, ENCODING_TYPE),
 	);
 	const decryptedBuffer = Buffer.concat([

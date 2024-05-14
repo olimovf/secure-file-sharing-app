@@ -1,4 +1,4 @@
-const ENCODING_TYPE = 'base64';
+const ENCODING_TYPE = 'hex';
 const VERIFICATION_TOKEN_EXPIRES_AT = 1; // in hours
 const MAX_FILE_NAME_LENGTH = 64;
 

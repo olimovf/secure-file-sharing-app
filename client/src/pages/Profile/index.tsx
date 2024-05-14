@@ -22,7 +22,6 @@ type PasswordType = {
 type FormValuesType = Omit<UserType, '_id' | 'verified'> & PasswordType;
 
 const Profile = () => {
-	const theme = useTheme();
 	const { id, roles } = useAuth();
 	const { user }: { user: UserType } = useGetUsersQuery('usersList', {
 		selectFromResult: ({ data }) => ({
@@ -59,6 +58,8 @@ const Profile = () => {
 			setValue('roles', user.roles);
 		}
 	}, [user, setValue]);
+
+	const theme = useTheme();
 
 	const inputStyles = {
 		'& .MuiInputBase-input:-webkit-autofill': {

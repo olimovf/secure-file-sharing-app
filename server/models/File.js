@@ -27,6 +27,9 @@ const fileSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',
 		},
+		iv: {
+			type: String,
+		},
 	},
 	{
 		timestamps: true,

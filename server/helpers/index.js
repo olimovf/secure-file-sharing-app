@@ -89,8 +89,11 @@ const deleteDirectoryRecursive = (path) => {
 	}
 };
 
-const saveActivity = async ({ userId, ip, action, status, reason }) => {
-	const activity = new Activity({ userId, ip, action, status, reason });
+const saveActivity = async ({ userId, action, status }) => {
+	const userIp = await fetch('https://api.ipify.org/?format=json').then(
+		(data) => data.json(),
+	);
+	const activity = new Activity({ userId, ip: userIp?.ip, action, status });
 	await activity.save();
 };
 

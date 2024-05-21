@@ -7,9 +7,18 @@ const asyncHandler = require('express-async-handler');
 
 const getAllActivities = asyncHandler(async (req, res) => {
 	const userId = req?.user?.id;
-	const activities = await Activity.find({ userId }).lean().exec();
+	const roles = req?.user?.roles;
 
-	res.json(activities);
+	if (roles.includes('Admin')) {
+		const all = await Activity.find({}).sort({ createdAt: -1 }).lean().exec();
+		return res.json(all);
+	}
+
+	const userActivities = await Activity.find({ userId })
+		.sort({ createdAt: -1 })
+		.lean()
+		.exec();
+	res.json(userActivities);
 });
 
 const deleteAllActivities = asyncHandler(async (req, res) => {

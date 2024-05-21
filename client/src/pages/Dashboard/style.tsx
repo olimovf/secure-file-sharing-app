@@ -1,6 +1,6 @@
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
-import { Box, BoxProps } from '@mui/material';
+import { Box, BoxProps, Paper, PaperProps } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 const drawerWidth = 250;
@@ -57,6 +57,37 @@ export const AppBar = styled(MuiAppBar, {
 	}),
 }));
 
+interface PProps extends PaperProps {
+	open?: boolean;
+}
+
+export const BottomBar = styled(Paper, {
+	shouldForwardProp: (prop) => prop !== 'open',
+})<PProps>(({ theme, open }) => ({
+	zIndex: theme.zIndex.drawer + 1,
+	transition: theme.transitions.create(['width', 'margin'], {
+		easing: theme.transitions.easing.sharp,
+		duration: theme.transitions.duration.leavingScreen,
+	}),
+	position: 'fixed',
+	bottom: 0,
+	left: 0,
+	right: 0,
+	borderRadius: 0,
+	padding: theme.spacing(2),
+	marginLeft: open ? `${drawerWidth}px` : `calc(${theme.spacing(7)} + 1px)`,
+	[theme.breakpoints.up('sm')]: {
+		marginLeft: open ? `${drawerWidth}px` : `calc(${theme.spacing(8)} + 1px)`,
+	},
+	...(open && {
+		marginLeft: drawerWidth,
+		transition: theme.transitions.create(['width', 'margin'], {
+			easing: theme.transitions.easing.sharp,
+			duration: theme.transitions.duration.enteringScreen,
+		}),
+	}),
+}));
+
 export const Drawer = styled(MuiDrawer, {
 	shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -74,10 +105,37 @@ export const Drawer = styled(MuiDrawer, {
 	}),
 }));
 
-export const Main = styled((props: BoxProps) => (
-	<Box component={'main'} {...props} />
-))(({ theme }) => ({
-	width: `calc(100% - ${drawerWidth}px)`,
+// export const Main = styled((props: BoxProps) => (
+// 	<Box component={'main'} {...props} />
+// ))(({ theme }) => ({
+// 	width: `calc(100% - ${drawerWidth}px)`,
+// 	flexGrow: theme.spacing(1),
+// 	padding: theme.spacing(3),
+// }));
+
+interface BProps extends BoxProps {
+	open?: boolean;
+}
+
+export const Main = styled(
+	(props: BProps) => <Box component={'main'} {...props} />,
+	{
+		shouldForwardProp: (prop) => prop !== 'open',
+	},
+)(({ theme, open }) => ({
+	width: '100%',
 	flexGrow: theme.spacing(1),
 	padding: theme.spacing(3),
+	overflowX: 'auto',
+	transition: theme.transitions.create(['width'], {
+		easing: theme.transitions.easing.easeIn,
+		duration: theme.transitions.duration.leavingScreen,
+	}),
+	...(open && {
+		width: `calc(100% - ${drawerWidth}px)`,
+		transition: theme.transitions.create(['width'], {
+			easing: theme.transitions.easing.easeIn,
+			duration: theme.transitions.duration.enteringScreen,
+		}),
+	}),
 }));

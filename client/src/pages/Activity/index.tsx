@@ -4,6 +4,9 @@ import { PulseLoader } from 'react-spinners';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { useGetUsersQuery } from '../../features/users/usersApiSlice';
+import useAuth from '../../hooks/useAuth';
+import { ROLES } from '../../utils/constants';
 dayjs.extend(utc);
 
 type RowsType = {
@@ -20,15 +23,29 @@ const Activity = () => {
 		'activityList',
 		{},
 	);
+	const { data: users } = useGetUsersQuery('usersList', {});
+	const { roles } = useAuth();
 
-	const rows = acts?.map((act: ActivityType, index: number) => ({
-		id: act._id,
-		tr: index + 1,
-		ip: act?.ip,
-		action: act?.action,
-		status: act?.status,
-		createdAt: act.createdAt,
-	}));
+	const rows = acts?.map((act: ActivityType, index: number) => {
+		const obj = {
+			id: act._id,
+			tr: index + 1,
+			ip: act?.ip,
+			action: act?.action,
+			status: act?.status,
+			createdAt: act.createdAt,
+		};
+
+		if (roles.includes(ROLES.admin)) {
+			return {
+				...obj,
+				user: users.find((user: UserType) => user._id === act.userId)
+					?.firstName,
+			};
+		}
+
+		return obj;
+	});
 
 	const columns: GridColDef<RowsType>[] = [
 		{
@@ -67,31 +84,40 @@ const Activity = () => {
 		},
 	];
 
+	if (roles.includes(ROLES.admin)) {
+		columns.splice(1, 0, {
+			field: 'user',
+			headerName: 'User',
+			flex: 1,
+			editable: false,
+		});
+	}
+
 	const theme = useTheme();
 
 	return (
 		<Box>
 			<Typography variant='h4'>Activity</Typography>
 
-			{actsLoading ? (
-				<PulseLoader color={theme.palette.primary.main} />
-			) : (
-				<Box sx={{ width: '100%', mt: 2 }}>
+			<Box sx={{ width: '100%', mt: 2 }}>
+				{actsLoading ? (
+					<PulseLoader color={theme.palette.primary.main} />
+				) : (
 					<DataGrid
 						rows={rows || []}
 						columns={columns}
 						initialState={{
 							pagination: {
 								paginationModel: {
-									pageSize: 10,
+									pageSize: 5,
 								},
 							},
 						}}
-						pageSizeOptions={[10]}
+						pageSizeOptions={[5]}
 						disableRowSelectionOnClick
 					/>
-				</Box>
-			)}
+				)}
+			</Box>
 		</Box>
 	);
 };

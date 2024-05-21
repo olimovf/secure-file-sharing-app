@@ -3,11 +3,15 @@ const KMS = require('../models/KMS');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { sendVerificationEmail, sendInvitationEmail } = require('../helpers');
+const {
+	sendVerificationEmail,
+	sendInvitationEmail,
+	saveActivity,
+} = require('../helpers');
 const { generateDHParams } = require('../helpers/dh');
 const {
 	ENCODING_TYPE,
-	VERIFICATION_TOKEN_EXPIRES_AT,
+	VERIFICATION_TOKEN_EXPIRES_IN,
 } = require('../helpers/constants');
 const { encryptText } = require('../helpers/encryption');
 const crypto = require('crypto');
@@ -61,7 +65,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 	const hashedToken = await bcrypt.hash(token, 10);
 
 	const tokenExpiresAt = new Date(
-		Date.now() + VERIFICATION_TOKEN_EXPIRES_AT * 60 * 60 * 1000,
+		Date.now() + VERIFICATION_TOKEN_EXPIRES_IN * 60 * 60 * 1000,
 	);
 
 	const { publicKey, privateKey, generator, prime } = generateDHParams();
@@ -87,7 +91,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 	const secret = { prime, generator, privateKey };
 	const iv = crypto.randomBytes(16).toString(ENCODING_TYPE);
 
-	const kms = await KMS.create({
+	await KMS.create({
 		userId: user?._id,
 		params: encryptText(JSON.stringify(secret), iv),
 		iv,
@@ -104,6 +108,12 @@ const createNewUser = asyncHandler(async (req, res) => {
 			type === 'invitation'
 				? 'User created successfully'
 				: 'You are registered successfully. Please, check your email for verification.';
+
+		await saveActivity({
+			userId: user._id,
+			action: 'SIGN UP',
+			status: 'SUCCESS ✅',
+		});
 
 		res.status(201).json({
 			message: resMsg,

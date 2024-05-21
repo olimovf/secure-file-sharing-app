@@ -1,4 +1,3 @@
-const { format } = require('date-fns');
 const mongoose = require('mongoose');
 
 const activitySchema = new mongoose.Schema(

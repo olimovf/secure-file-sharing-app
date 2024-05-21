@@ -3,7 +3,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const { saveActivity } = require('../helpers');
-const requestIp = require('request-ip');
+const {
+	ACCESS_TOKEN_EXPIRES_IN,
+	REFRESH_TOKEN_EXPRIRES_IN,
+} = require('../helpers/constants');
 
 // @desc Login
 // @route POST /auth
@@ -21,17 +24,7 @@ const login = asyncHandler(async (req, res) => {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 
-	const clientIp = requestIp.getClientIp(req);
-	console.log({ clientIp });
-
 	if (!foundUser.verified) {
-		await saveActivity({
-			userId: foundUser._id,
-			ip: req.ip,
-			action: 'LOGIN',
-			status: 'fail',
-		});
-
 		return res.status(401).json({
 			message: 'Your email has not been verified yet',
 		});
@@ -42,20 +35,12 @@ const login = asyncHandler(async (req, res) => {
 	if (!match) {
 		await saveActivity({
 			userId: foundUser._id,
-			ip: req.ip,
 			action: 'LOGIN',
-			status: 'fail',
+			status: 'FAIL ❌',
 		});
 
 		return res.status(401).json({ message: 'Incorrect email or password' });
 	}
-
-	await saveActivity({
-		userId: foundUser._id,
-		ip: req.ip,
-		action: 'LOGIN',
-		status: 'success',
-	});
 
 	const accessToken = jwt.sign(
 		{
@@ -65,13 +50,13 @@ const login = asyncHandler(async (req, res) => {
 			},
 		},
 		process.env.ACCESS_TOKEN_SECRET,
-		{ expiresIn: '15m' },
+		{ expiresIn: ACCESS_TOKEN_EXPIRES_IN },
 	);
 
 	const refreshToken = jwt.sign(
 		{ id: foundUser._id },
 		process.env.REFRESH_TOKEN_SECRET,
-		{ expiresIn: '1d' },
+		{ expiresIn: REFRESH_TOKEN_EXPRIRES_IN },
 	);
 
 	// Create secure cookie with refresh token
@@ -79,7 +64,13 @@ const login = asyncHandler(async (req, res) => {
 		httpOnly: true, //accessible only by web server
 		secure: true, //https
 		sameSite: 'None', //cross-site cookie
-		maxAge: 1 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+		maxAge: parseInt(REFRESH_TOKEN_EXPRIRES_IN) * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+	});
+
+	await saveActivity({
+		userId: foundUser._id,
+		action: 'LOGIN',
+		status: 'SUCCESS ✅',
 	});
 
 	// Send accessToken containing email and roles
@@ -114,7 +105,7 @@ const refresh = (req, res) => {
 					},
 				},
 				process.env.ACCESS_TOKEN_SECRET,
-				{ expiresIn: '15m' },
+				{ expiresIn: ACCESS_TOKEN_EXPIRES_IN },
 			);
 
 			res.json({ accessToken });
@@ -129,12 +120,6 @@ const logout = async (req, res) => {
 	const cookies = req.cookies;
 	if (!cookies?.jwt) return res.sendStatus(204); //No content
 	res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-	await saveActivity({
-		userId: req?.user?.id,
-		ip: req.ip,
-		action: 'LOGOUT',
-		status: 'success',
-	});
 	res.json({ message: 'Cookie cleared' });
 };
 

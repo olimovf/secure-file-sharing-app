@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { AppBar, Drawer, DrawerHeader, Main } from './style';
+import { AppBar, BottomBar, Drawer, DrawerHeader, Main } from './style';
 import {
 	Box,
 	Divider,
@@ -203,13 +203,16 @@ const Dashboard = () => {
 					})}
 				</List>
 			</Drawer>
-			<Main
-				sx={{
-					width: open ? 'calc(100% - 250px)' : '100%',
-				}}
-			>
+			<Main open={open}>
 				<DrawerHeader />
-				<Outlet />
+				<Box mb={6} width={'100%'}>
+					<Outlet />
+				</Box>
+				<BottomBar open={open} elevation={3}>
+					<Typography align='center' variant='body1'>
+						&copy; 2024 Secure File Sharing. All rights reserved.
+					</Typography>
+				</BottomBar>
 			</Main>
 		</Box>
 	);

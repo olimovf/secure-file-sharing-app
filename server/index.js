@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env' });
 const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -33,3 +33,5 @@ mongoose.connection.once('open', () => {
 	console.log('Connected to MongoDB');
 	app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
+
+module.exports = app;

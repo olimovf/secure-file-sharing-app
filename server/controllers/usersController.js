@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const KMS = require('../models/KMS');
 const asyncHandler = require('express-async-handler');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const {
 	sendVerificationEmail,

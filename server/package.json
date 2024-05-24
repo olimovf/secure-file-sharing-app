@@ -8,6 +8,7 @@
     "dev": "nodemon index"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -20,6 +21,7 @@
     "mongoose": "^8.0.4",
     "netlify-cli": "^17.23.5",
     "netlify-lambda": "^2.0.16",
+    "node-schedule": "^2.1.1",
     "nodemailer": "^6.9.13",
     "serverless-http": "^3.2.0",
     "uuid": "^9.0.1"

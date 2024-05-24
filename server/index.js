@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 3500;
 const path = require('path');
 const { deleteDirectoryRecursive } = require('./helpers');
 
+require('./cron/index');
+
 connectDB();
 
 app.use(cors(corsOptions));

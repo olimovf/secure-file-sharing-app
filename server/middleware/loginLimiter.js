@@ -10,6 +10,7 @@ const loginLimiter = rateLimit({
 	handler: (req, res, next, options) => {
 		res.status(options.statusCode).send(options.message);
 	},
+	validate: { xForwardedForHeader: false },
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });

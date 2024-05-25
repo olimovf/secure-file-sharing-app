@@ -5,6 +5,7 @@ import GlobalContainer from '../../components/GlobalContainer';
 import { useForm } from 'react-hook-form';
 import { useAddNewUserMutation } from '../../features/users/usersApiSlice';
 import notify from '../../utils/notify';
+import useTitle from '../../hooks/useTitle';
 
 type PasswordType = {
 	password: string;
@@ -14,6 +15,7 @@ type FormValuesType = Omit<UserType, '_id' | 'verified' | 'roles'> &
 	PasswordType;
 
 const Signup = () => {
+	useTitle('Signup');
 	const navigate = useNavigate();
 	const {
 		register,

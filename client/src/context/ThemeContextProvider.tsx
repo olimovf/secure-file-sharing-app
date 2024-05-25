@@ -2,7 +2,7 @@ import { createContext, ReactNode } from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import useMode from '../hooks/useMode';
 
-export const ThemeContext = createContext({});
+export const ThemeContext = createContext({ toggleColorMode: () => {} });
 
 type ThemeContextProviderProps = {
 	children: ReactNode;

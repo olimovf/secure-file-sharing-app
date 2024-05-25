@@ -15,6 +15,7 @@ import Verification from './pages/Verification';
 import SharedByMe from './pages/SharedByMe';
 import SharedWithMe from './pages/SharedWithMe';
 import Activity from './pages/Activity';
+import NotFound from './pages/NotFound';
 
 const App = () => {
 	return (
@@ -28,10 +29,12 @@ const App = () => {
 					<Route element={<RequireAuth allowedRoles={Object.values(ROLES)} />}>
 						<Route path='dashboard' element={<Dashboard />}>
 							<Route index element={<Home />} />
-							<Route path='users'>
-								<Route index element={<Users />} />
-								<Route path=':id' element={<EditUser />} />
-								<Route path='new' element={<NewUser />} />
+							<Route element={<RequireAuth allowedRoles={[ROLES.admin]} />}>
+								<Route path='users'>
+									<Route index element={<Users />} />
+									<Route path=':id' element={<EditUser />} />
+									<Route path='new' element={<NewUser />} />
+								</Route>
 							</Route>
 							<Route path='profile' element={<Profile />} />
 							<Route path='shared-by-me' element={<SharedByMe />} />
@@ -42,6 +45,7 @@ const App = () => {
 				</Route>
 
 				<Route path='users/verify/:userId/:token' element={<Verification />} />
+				<Route path='*' element={<NotFound />} />
 			</Route>
 		</Routes>
 	);

@@ -22,7 +22,7 @@ const getAllActivities = asyncHandler(async (req, res) => {
 });
 
 const deleteAllActivities = asyncHandler(async (req, res) => {
-	await Activity.deleteMany({});
+	await Activity.deleteMany({}).exec();
 
 	res.json({ message: 'Activities deleted succesfully' });
 });

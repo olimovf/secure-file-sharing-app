@@ -60,7 +60,11 @@ export const loadColumns = (
 			width: 110,
 			editable: false,
 			renderCell: (params: GridRenderCellParams<UserType>) => {
-				return params.row.verified ? <DoneIcon /> : <CloseIcon />;
+				return params.row.verified ? (
+					<DoneIcon sx={{ mt: 1, color: 'success.main' }} />
+				) : (
+					<CloseIcon sx={{ mt: 1, color: 'error.main' }} />
+				);
 			},
 		},
 		{
@@ -72,13 +76,13 @@ export const loadColumns = (
 			getActions: (params: GridRowParams) => {
 				return [
 					<GridActionsCellItem
-						icon={<EditIcon />}
+						icon={<EditIcon color='info' />}
 						label='Edit'
 						color='inherit'
 						onClick={() => onEdit(params.row.id)}
 					/>,
 					<GridActionsCellItem
-						icon={<DeleteIcon />}
+						icon={<DeleteIcon color='error' />}
 						label='Delete'
 						color='inherit'
 						onClick={() => onDelete(params.row.id)}

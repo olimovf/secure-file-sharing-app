@@ -24,8 +24,10 @@ import { useState } from 'react';
 import notify from '../../utils/notify';
 import { useUploadFilesMutation } from '../../features/file/fileApiSlice';
 import { acceptedFileTypes } from '../../utils/constants';
+import useTitle from '../../hooks/useTitle';
 
 const Home = () => {
+	useTitle('Share files');
 	const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
 		accept: {
 			'application/pdf': acceptedFileTypes,

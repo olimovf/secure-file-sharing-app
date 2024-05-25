@@ -11,10 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import notify from '../../utils/notify';
 import { useForm, Controller } from 'react-hook-form';
 import { ROLES } from '../../utils/constants';
+import useTitle from '../../hooks/useTitle';
 
 type FormValuesType = Omit<UserType, '_id' | 'verified'>;
 
 const NewUser = () => {
+	useTitle('Add new user');
 	const navigate = useNavigate();
 
 	const {

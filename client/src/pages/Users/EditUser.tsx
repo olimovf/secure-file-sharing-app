@@ -15,10 +15,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { useEffect } from 'react';
 import { ROLES } from '../../utils/constants';
 import notify from '../../utils/notify';
+import useTitle from '../../hooks/useTitle';
 
 type FormValuesType = Omit<UserType, '_id' | 'verified'>;
 
 const EditUser = () => {
+	useTitle('Edit user');
 	const { id } = useParams();
 	const navigate = useNavigate();
 

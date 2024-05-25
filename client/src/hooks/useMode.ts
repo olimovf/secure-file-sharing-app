@@ -3,7 +3,10 @@ import { PaletteMode, createTheme } from '@mui/material';
 import { themeSettings } from '../theme';
 
 const useMode = () => {
-	const [mode, setMode] = useState<PaletteMode>('dark');
+	const storedMode = localStorage.getItem('mode');
+	const [mode, setMode] = useState<PaletteMode>(
+		storedMode === 'light' || storedMode === 'dark' ? storedMode : 'light',
+	);
 
 	const toggleColorMode = () => {
 		setMode((prev) => (prev === 'light' ? 'dark' : 'light'));

@@ -15,6 +15,8 @@ const {
 } = require('../helpers/constants');
 const { encryptText } = require('../helpers/encryption');
 const crypto = require('crypto');
+const File = require('../models/File');
+const Activity = require('../models/Activity');
 
 // @desc Get all users
 // @route GET /users
@@ -128,6 +130,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateUser = asyncHandler(async (req, res) => {
+	const userId = req?.user?.id;
 	const { id, firstName, lastName, email, roles, password } = req.body;
 
 	// confirm data
@@ -139,11 +142,23 @@ const updateUser = asyncHandler(async (req, res) => {
 		!Array.isArray(roles) ||
 		!roles.length
 	) {
+		await saveActivity({
+			userId: userId,
+			action: userId === id ? 'UPDATE PROFILE' : 'UPDATE USER',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'All fields are required' });
 	}
 
 	const user = await User.findById(id).exec();
 	if (!user) {
+		await saveActivity({
+			userId: userId,
+			action: userId === id ? 'UPDATE PROFILE' : 'UPDATE USER',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'User not found' });
 	}
 
@@ -154,6 +169,12 @@ const updateUser = asyncHandler(async (req, res) => {
 		.exec();
 	// allow updates to the original user
 	if (duplicate && duplicate._id.toString() !== id) {
+		await saveActivity({
+			userId: userId,
+			action: userId === id ? 'UPDATE PROFILE' : 'UPDATE USER',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(409).json({ message: 'This email already exists' });
 	}
 
@@ -169,7 +190,15 @@ const updateUser = asyncHandler(async (req, res) => {
 
 	await user.save();
 
-	res.json({ message: 'User updated successfully' });
+	await saveActivity({
+		userId: userId,
+		action: userId === id ? 'UPDATE PROFILE' : 'UPDATE USER',
+		status: 'SUCCESS ✅',
+	});
+
+	res.json({
+		message: `${userId === id ? 'Profile' : 'User'} updated successfully`,
+	});
 });
 
 // @desc Delete a user
@@ -177,29 +206,44 @@ const updateUser = asyncHandler(async (req, res) => {
 // @access Private
 
 const deleteUser = asyncHandler(async (req, res) => {
+	const userId = req?.user?.id;
 	const { id } = req.body;
-	const authenticatedUserId = req?.user?.id;
 
 	if (!id) {
+		await saveActivity({
+			userId: userId,
+			action: userId === id ? 'DELETED ACCOUNT' : 'DELETE USER',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'User ID required' });
 	}
 
 	const user = await User.findById(id).exec();
 	if (!user) {
+		await saveActivity({
+			userId: userId,
+			action: userId === id ? 'DELETED ACCOUNT' : 'DELETE USER',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'User not found' });
 	}
 
-	await user.deleteOne();
-	const kms = await KMS.findOne({ userId: id }).lean().exec();
-	if (kms) {
-		await kms.deleteOne();
-	}
+	await user.deleteOne().exec();
+	await KMS.deleteOne({ userId: id }).exec();
+	await File.deleteMany({ createdBy: id }).exec();
+	await Activity.deleteMany({ userId: id }).exec();
 
-	// if (id === authenticatedUserId) {
-	// 	return res.redirect('/login');
-	// }
+	await saveActivity({
+		userId: userId,
+		action: userId === id ? 'DELETED ACCOUNT' : 'DELETE USER',
+		status: 'SUCCESS ✅',
+	});
 
-	res.json({ message: 'User deleted succesfully' });
+	res.json({
+		message: `${userId === id ? 'Account' : 'User'} deleted succesfully`,
+	});
 });
 
 // @desc Verify a user email
@@ -234,7 +278,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 	}
 
 	if (tokenExpiresAt < Date.now()) {
-		await user.deleteOne();
+		await user.deleteOne().exec();
 
 		return res.status(400).json({
 			message: 'Verification link has expired. Please sign up again.',

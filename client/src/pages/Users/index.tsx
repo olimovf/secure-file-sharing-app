@@ -19,8 +19,12 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import notify from '../../utils/notify';
 import { PulseLoader } from 'react-spinners';
+import useAuth from '../../hooks/useAuth';
+import useTitle from '../../hooks/useTitle';
 
 const Users = () => {
+	useTitle('Users list');
+	const { id } = useAuth();
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery(
 		'usersList',
 		{},
@@ -60,6 +64,9 @@ const Users = () => {
 				notify(err?.data?.message || err?.message, 'error');
 			});
 		setOpen(false);
+		if (id === userId) {
+			navigate('/login');
+		}
 	};
 
 	const handleDeleteCancel = () => {
@@ -77,10 +84,10 @@ const Users = () => {
 				</Button> */}
 			</Box>
 
-			{usersLoading ? (
-				<PulseLoader color={theme.palette.primary.main} />
-			) : (
-				<Box sx={{ width: '100%', mt: 2 }}>
+			<Box sx={{ width: '100%', mt: 2 }}>
+				{usersLoading ? (
+					<PulseLoader color={theme.palette.primary.main} />
+				) : (
 					<DataGrid
 						rows={rows || []}
 						columns={loadColumns(onDelete, onEdit)}
@@ -93,14 +100,42 @@ const Users = () => {
 						}}
 						pageSizeOptions={[5]}
 						disableRowSelectionOnClick
+						sx={{
+							border: `1px solid ${theme.palette.info.dark}`,
+							'& .MuiDataGrid-row': {
+								borderBottom: `1px solid ${theme.palette.info.dark}`,
+								'&:first-of-type': {
+									borderTop: `1px solid ${theme.palette.info.dark}`,
+								},
+							},
+							'& .MuiDataGrid-cell': {
+								borderTop: 0,
+								bordetBottom: 0,
+
+								'&:focus': {
+									outlineColor: theme.palette.info.dark,
+								},
+							},
+							'& .MuiDataGrid-footerContainer': {
+								borderTop: 0,
+								bordetBottom: 0,
+							},
+							'& .MuiDataGrid-topContainer': {
+								borderBottom: 0,
+							},
+							'& .MuiDataGrid-topContainer::after': {
+								height: 0,
+							},
+						}}
 					/>
-				</Box>
-			)}
+				)}
+			</Box>
 
 			<Dialog open={open} onClose={handleDeleteCancel}>
 				<DialogTitle>Confirm Deletion</DialogTitle>
 				<DialogContent>
-					Are you sure you want to delete this user?
+					Are you sure you want to delete this user? Anything <br /> associated
+					with this account will also be deleted!
 				</DialogContent>
 				<Divider />
 				<DialogActions>

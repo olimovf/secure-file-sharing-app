@@ -3,9 +3,9 @@ import { useRefreshMutation } from './authApiSlice';
 import usePersist from '../../hooks/usePersist';
 import { useSelector } from 'react-redux';
 import { selectCurrentToken } from './authSlice';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
-import { Box, useTheme } from '@mui/material';
+import { Box, useTheme, Typography } from '@mui/material';
 
 type UseRefreshMutationType = {
 	isUninitialized: boolean;
@@ -25,6 +25,7 @@ const PersistLogin = () => {
 	const token = useSelector(selectCurrentToken);
 	const effectRan = useRef(false);
 	const theme = useTheme();
+	const location = useLocation();
 
 	const [trueSuccess, setTrueSuccess] = useState(false);
 
@@ -42,7 +43,7 @@ const PersistLogin = () => {
 					//const { accessToken } = response.data
 					setTrueSuccess(true);
 				} catch (err) {
-					console.error(err);
+					console.log(err);
 				}
 			};
 
@@ -78,12 +79,22 @@ const PersistLogin = () => {
 	} else if (isError) {
 		// persist: yes, token: no
 		// console.log('error', error);
-		content = (
-			<p className='errmsg'>
-				{`${error?.data?.message || 'Something went wrong'} - `}
-				<Link to='/login'>Please login again</Link>.
-			</p>
-		);
+		if (error?.status === 401)
+			content = <Navigate to='/login' state={{ from: location }} replace />;
+		else
+			content = (
+				<Box
+					display={'flex'}
+					justifyContent={'center'}
+					alignItems={'center'}
+					minHeight={'100vh'}
+				>
+					<Typography variant='body1'>
+						{`${error?.data?.message || 'Something went wrong'} - `}
+						<Link to='/login'>Please login again</Link>.
+					</Typography>
+				</Box>
+			);
 	} else if (isSuccess && trueSuccess) {
 		// persist: yes, token: yes
 		// console.log('success');

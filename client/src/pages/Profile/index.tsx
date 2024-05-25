@@ -15,6 +15,7 @@ import { Controller, useForm } from 'react-hook-form';
 import notify from '../../utils/notify';
 import { useEffect } from 'react';
 import { ROLES } from '../../utils/constants';
+import useTitle from '../../hooks/useTitle';
 
 type PasswordType = {
 	password?: string;
@@ -22,6 +23,7 @@ type PasswordType = {
 type FormValuesType = Omit<UserType, '_id' | 'verified'> & PasswordType;
 
 const Profile = () => {
+	useTitle('Profile');
 	const { id, roles } = useAuth();
 	const { user }: { user: UserType } = useGetUsersQuery('usersList', {
 		selectFromResult: ({ data }) => ({

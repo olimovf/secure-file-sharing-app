@@ -6,6 +6,7 @@ const File = require('../models/File');
 const {
 	addTimestampToFileName,
 	removeTimestampFromFileName,
+	saveActivity,
 } = require('../helpers');
 const {
 	decryptFile,
@@ -66,11 +67,31 @@ const uploadFiles = asyncHandler(async (req, res) => {
 		await newFile.save();
 	});
 
-	await Promise.all(uploadPromises);
+	try {
+		await Promise.all(uploadPromises);
 
-	return res.status(200).json({
-		message: `${files.length === 1 ? 'File' : 'Files'} sent successfully`,
-	});
+		await saveActivity({
+			userId: userId,
+			action: 'SHARE FILE',
+			status: 'SUCCESS ✅',
+		});
+
+		return res.status(200).json({
+			message: `${files.length === 1 ? 'File' : 'Files'} sent successfully`,
+		});
+	} catch (err) {
+		await saveActivity({
+			userId: userId,
+			action: 'SHARE FILE',
+			status: 'FAIL ❌',
+		});
+
+		return res.status(500).json({
+			message: `Something went wrong while sending ${
+				files.length === 1 ? 'a file' : 'files'
+			}`,
+		});
+	}
 });
 
 // @desc Get all files
@@ -117,11 +138,22 @@ const downloadFile = asyncHandler(async (req, res) => {
 
 	const file = await File.findById(id).exec();
 	if (!file) {
+		await saveActivity({
+			userId: userId,
+			action: 'DOWNLOAD FILE',
+			status: 'FAIL ❌',
+		});
 		return res.status(404).json({ message: 'File not found' });
 	}
 
 	const filePath = path.resolve(__dirname, '..', 'files', file.originalName);
 	if (!fs.existsSync(filePath)) {
+		await saveActivity({
+			userId: userId,
+			action: 'DOWNLOAD FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(404).json({ message: 'File not found on server' });
 	}
 
@@ -147,23 +179,13 @@ const downloadFile = asyncHandler(async (req, res) => {
 
 	const buffer = decryptFile(filePath, sharedSecret.slice(0, 64), iv);
 
+	await saveActivity({
+		userId: userId,
+		action: 'DOWNLOAD FILE',
+		status: 'SUCCESS ✅',
+	});
+
 	res.end(buffer);
-
-	// const contentType = {
-	// 	'.pdf': 'application/pdf',
-	// 	'.doc': 'application/msword',
-	// 	'.docx':
-	// 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-	// };
-
-	// res.set({
-	// 	'Content-Type': 'application/msword',
-	// 	'Content-Disposition': 'attachment; filename=name.pdf',
-	// });
-
-	// console.log(buffer);
-
-	// res.download(buffer, file.name);
 });
 
 // @desc Delete a file
@@ -172,16 +194,37 @@ const downloadFile = asyncHandler(async (req, res) => {
 
 const deleteFile = asyncHandler(async (req, res) => {
 	const id = req.body?.id;
+	const userId = req?.user?.id;
+
 	if (!id) {
+		await saveActivity({
+			userId: userId,
+			action: 'DELETE FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'File ID is required' });
 	}
 
 	const file = await File.findById(id).exec();
 	if (!file) {
+		await saveActivity({
+			userId: userId,
+			action: 'DELETE FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'File not found' });
 	}
 
-	await file.deleteOne();
+	await file.deleteOne().exec();
+
+	await saveActivity({
+		userId: userId,
+		action: 'DELETE FILE',
+		status: 'SUCCESS ✅',
+	});
+
 	res.json({ message: 'File deleted successfully' });
 });
 
@@ -190,14 +233,33 @@ const deleteFile = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateFile = asyncHandler(async (req, res) => {
+	const userId = req?.user?.id;
 	const { id, name } = req.body;
 	if (!id) {
+		await saveActivity({
+			userId: userId,
+			action: 'UPDATE FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'File ID is required' });
 	}
 	if (!name.trim()) {
+		await saveActivity({
+			userId: userId,
+			action: 'UPDATE FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'File name is required' });
 	}
 	if (name.trim().length > MAX_FILE_NAME_LENGTH) {
+		await saveActivity({
+			userId: userId,
+			action: 'UPDATE FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({
 			message: `File name exceeds the maximum length of ${MAX_FILE_NAME_LENGTH} characters`,
 		});
@@ -205,6 +267,12 @@ const updateFile = asyncHandler(async (req, res) => {
 
 	const file = await File.findById(id).exec();
 	if (!file) {
+		await saveActivity({
+			userId: userId,
+			action: 'UPDATE FILE',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(400).json({ message: 'File not found' });
 	}
 
@@ -223,6 +291,12 @@ const updateFile = asyncHandler(async (req, res) => {
 
 	file.name = name + file.name.slice(file.name.lastIndexOf('_'));
 	await file.save();
+
+	await saveActivity({
+		userId: userId,
+		action: 'UPDATE FILE',
+		status: 'SUCCESS ✅',
+	});
 
 	res.json({ message: 'File updated successfully' });
 });

@@ -18,11 +18,12 @@ import {
 	useTheme,
 } from '@mui/material';
 import { navLinks } from './navLinks';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Avatar from '../../components/Avatar';
 import { useSendLogoutMutation } from '../../features/auth/authApiSlice';
 import useAuth from '../../hooks/useAuth';
 import { ROLES } from '../../utils/constants';
+import ToggleThemeButton from '../../components/ToggleThemeButton';
 
 const Dashboard = () => {
 	const [sendLogout] = useSendLogoutMutation();
@@ -53,11 +54,17 @@ const Dashboard = () => {
 		setOpen(false);
 	};
 
+	const location = useLocation();
+	const [selectedNavItem, setSelectedNavItem] = useState<string>(
+		location.pathname,
+	);
+
 	const theme = useTheme();
 	const activeColor = theme.palette.mode === 'dark' ? '#252525' : '#d5d5d5';
-	const [selectedNavItem, setSelectedNavItem] = useState<string>(
-		navLinks[0].name,
-	);
+
+	useEffect(() => {
+		setSelectedNavItem(location.pathname);
+	}, [location]);
 
 	return (
 		<Box sx={{ display: 'flex' }}>
@@ -81,7 +88,10 @@ const Dashboard = () => {
 					>
 						<MenuIcon />
 					</IconButton>
-					<Avatar />
+					<Box display={'flex'} gap={1} alignItems={'center'}>
+						<ToggleThemeButton />
+						<Avatar />
+					</Box>
 				</Toolbar>
 			</AppBar>
 			<Drawer variant='permanent' open={open}>
@@ -96,7 +106,7 @@ const Dashboard = () => {
 				<Divider />
 				<List sx={{ py: 0 }}>
 					{navLinks.map(({ name, to, icon }) => {
-						const isSelected = selectedNavItem === name;
+						const isSelected = selectedNavItem === to;
 
 						const txt = (
 							<>

@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../features/auth/authSlice';
 import { useForm } from 'react-hook-form';
 import notify from '../../utils/notify';
+import useTitle from '../../hooks/useTitle';
 
 type FormValuesType = {
 	email: string;
@@ -15,6 +16,7 @@ type FormValuesType = {
 };
 
 const Login = () => {
+	useTitle('Login');
 	const [login, { isLoading, isError, error, reset }] =
 		useLoginMutation<MutationType>();
 	const dispatch = useDispatch();

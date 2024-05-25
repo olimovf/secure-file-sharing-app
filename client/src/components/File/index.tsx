@@ -12,6 +12,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import { FileName, StyledCardContent, StyledCardMedia } from './style';
 import {
 	useDeleteFileMutation,
@@ -19,6 +20,7 @@ import {
 } from '../../features/file/fileApiSlice';
 import RenameFileModal from './RenameFileModal';
 import notify from '../../utils/notify';
+import InfoFileModal from './InfoFileModal';
 
 const File = ({ _id, name }: FileType) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -26,6 +28,7 @@ const File = ({ _id, name }: FileType) => {
 		isRenaming: boolean;
 		newName: string;
 	}>({ isRenaming: false, newName: name.slice(0, name.lastIndexOf('.')) });
+	const [isInfoFileOpen, setIsInfoFileOpen] = useState<boolean>(false);
 
 	useEffect(() => {
 		setFileState({
@@ -78,6 +81,11 @@ const File = ({ _id, name }: FileType) => {
 		setFileState({ ...fileState, isRenaming: true });
 	};
 
+	const handleInfoFile = () => {
+		handleClose();
+		setIsInfoFileOpen(true);
+	};
+
 	return (
 		<Card sx={{ p: 1.5 }}>
 			<StyledCardMedia>
@@ -104,6 +112,12 @@ const File = ({ _id, name }: FileType) => {
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
 			>
+				<MenuItem onClick={handleInfoFile}>
+					<ListItemIcon>
+						<InfoIcon fontSize='small' />
+					</ListItemIcon>
+					<Typography variant='inherit'>Info</Typography>
+				</MenuItem>
 				<MenuItem onClick={handleDownloadFile}>
 					<ListItemIcon>
 						<DownloadIcon fontSize='small' />
@@ -128,6 +142,11 @@ const File = ({ _id, name }: FileType) => {
 				fileType={name.slice(name.lastIndexOf('.'))}
 				fileState={fileState}
 				setFileState={setFileState}
+			/>
+			<InfoFileModal
+				open={isInfoFileOpen}
+				setOpen={setIsInfoFileOpen}
+				fileId={_id}
 			/>
 		</Card>
 	);

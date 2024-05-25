@@ -9,7 +9,7 @@ import PersonIcon from '@mui/icons-material/Person';
 // import NotificationsIcon from '@mui/icons-material/Notifications';
 // import SearchIcon from '@mui/icons-material/Search';
 // import HelpIcon from '@mui/icons-material/Help';
-import CoronavirusIcon from '@mui/icons-material/Coronavirus';
+// import CoronavirusIcon from '@mui/icons-material/Coronavirus';
 import LogoutIcon from '@mui/icons-material/Logout';
 import UsersIcon from '@mui/icons-material/People';
 
@@ -54,11 +54,11 @@ export const navLinks = [
 	// 	to: '/dashboard/settings',
 	// 	icon: <SettingsIcon />,
 	// },
-	{
-		name: 'VirusTotal',
-		// to: '/dashboard/virustotal',
-		icon: <CoronavirusIcon />,
-	},
+	// {
+	// 	name: 'VirusTotal',
+	// 	// to: '/dashboard/virustotal',
+	// 	icon: <CoronavirusIcon />,
+	// },
 	{
 		name: 'Logout',
 		to: '/dashboard/logout',

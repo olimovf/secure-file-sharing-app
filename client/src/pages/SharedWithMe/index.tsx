@@ -3,8 +3,10 @@ import { useGetFilesQuery } from '../../features/file/fileApiSlice';
 import File from '../../components/File';
 import { PulseLoader } from 'react-spinners';
 import useAuth from '../../hooks/useAuth';
+import useTitle from '../../hooks/useTitle';
 
 const SharedWithMe = () => {
+	useTitle('Files shared with me');
 	const { id } = useAuth();
 	const { data: files, isLoading: filesLoading } = useGetFilesQuery(
 		'filesList',

@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import { useGetUsersQuery } from '../../features/users/usersApiSlice';
 import useAuth from '../../hooks/useAuth';
 import { ROLES } from '../../utils/constants';
+import useTitle from '../../hooks/useTitle';
 dayjs.extend(utc);
 
 type RowsType = {
@@ -19,6 +20,7 @@ type RowsType = {
 };
 
 const Activity = () => {
+	useTitle('Activity');
 	const { data: acts, isLoading: actsLoading } = useGetActivitiesQuery(
 		'activityList',
 		{},
@@ -115,6 +117,33 @@ const Activity = () => {
 						}}
 						pageSizeOptions={[5]}
 						disableRowSelectionOnClick
+						sx={{
+							border: `1px solid ${theme.palette.info.dark}`,
+							'& .MuiDataGrid-row': {
+								borderBottom: `1px solid ${theme.palette.info.dark}`,
+								'&:first-of-type': {
+									borderTop: `1px solid ${theme.palette.info.dark}`,
+								},
+							},
+							'& .MuiDataGrid-cell': {
+								borderTop: 0,
+								bordetBottom: 0,
+
+								'&:focus': {
+									outlineColor: theme.palette.info.dark,
+								},
+							},
+							'& .MuiDataGrid-footerContainer': {
+								borderTop: 0,
+								bordetBottom: 0,
+							},
+							'& .MuiDataGrid-topContainer': {
+								borderBottom: 0,
+							},
+							'& .MuiDataGrid-topContainer::after': {
+								height: 0,
+							},
+						}}
 					/>
 				)}
 			</Box>

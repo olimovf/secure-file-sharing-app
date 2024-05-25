@@ -13,11 +13,10 @@ type FileType = {
 	_id: string;
 	name: string;
 	size: number;
-	password?: string;
-	expirationTime?: string;
 	createdBy: string;
 	sharedBy: string;
 	sharedWith: string;
+	createdAt: string;
 };
 
 type UserType = {

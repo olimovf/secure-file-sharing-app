@@ -25,6 +25,12 @@ const login = asyncHandler(async (req, res) => {
 	}
 
 	if (!foundUser.verified) {
+		await saveActivity({
+			userId: foundUser._id,
+			action: 'LOGIN',
+			status: 'FAIL ❌',
+		});
+
 		return res.status(401).json({
 			message: 'Your email has not been verified yet',
 		});

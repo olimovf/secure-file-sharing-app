@@ -1,9 +1,10 @@
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography, Skeleton } from '@mui/material';
 import GlobalContainer from '../../components/GlobalContainer';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import { useVerifyUserQuery } from '../../features/users/usersApiSlice';
 import { useParams } from 'react-router-dom';
+import useTitle from '../../hooks/useTitle';
 
 type VerifyUserQueryType = {
 	isUninitialized: boolean;
@@ -22,6 +23,7 @@ type VerifyUserQueryType = {
 };
 
 const Verification = () => {
+	useTitle('Verification');
 	const { userId, token } = useParams();
 
 	const { data, isError, error, isLoading } =
@@ -43,18 +45,27 @@ const Verification = () => {
 					alignItems: 'center',
 				}}
 			>
-				{isLoading ? null : isError ? (
+				{isLoading ? (
+					<Skeleton
+						variant='rounded'
+						width={'100%'}
+						height={120}
+						animation='wave'
+					/>
+				) : isError ? (
 					<NewReleasesIcon color='error' sx={{ fontSize: '80px' }} />
 				) : (
 					<VerifiedIcon color='success' sx={{ fontSize: '80px' }} />
 				)}
 				<Typography variant='h6' align='center'>
-					{isLoading
-						? null
-						: isError
-							? error?.data.message ||
-								'Something went wrong. Please, make sure to click the right verification link sent to your email'
-							: data?.message}
+					{isLoading ? (
+						<Skeleton width={280} variant='text' animation='wave'></Skeleton>
+					) : isError ? (
+						error?.data?.message ||
+						'Something went wrong. Please, make sure to click the right verification link sent to your email'
+					) : (
+						data?.message
+					)}
 				</Typography>
 			</Paper>
 		</GlobalContainer>

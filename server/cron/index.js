@@ -13,8 +13,8 @@ const fetchApiData = async () => {
 	}
 };
 
-// Schedule the job to run every 10 minutes
-schedule.scheduleJob('*/10 * * * *', () => {
+// Schedule the job to run every 5 minutes
+schedule.scheduleJob('*/5 * * * *', () => {
 	console.log('Running scheduled job at', new Date().toLocaleString());
 	fetchApiData();
 });

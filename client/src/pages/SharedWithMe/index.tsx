@@ -15,6 +15,9 @@ const SharedWithMe = () => {
 
 	const theme = useTheme();
 
+	const sharedWith =
+		files?.filter((file: FileType) => file.sharedWith === id) || [];
+
 	return (
 		<>
 			<Box
@@ -32,9 +35,8 @@ const SharedWithMe = () => {
 					</Grid>
 				) : (
 					<>
-						{files?.filter((file: FileType) => file.sharedWith === id)
-							?.length !== 0 ? (
-							files?.map((file: FileType, i: number) => (
+						{sharedWith?.length !== 0 ? (
+							sharedWith?.map((file: FileType, i: number) => (
 								<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
 									<File {...file} />
 								</Grid>

@@ -7,8 +7,6 @@ const corsOptions = require('./config/corsOptions');
 const connectDB = require('./config/dbConn');
 const mongoose = require('mongoose');
 const PORT = process.env.PORT || 3500;
-const path = require('path');
-const { deleteDirectoryRecursive } = require('./helpers');
 
 require('./cron/index');
 
@@ -24,12 +22,6 @@ app.use('/auth', require('./routes/authRoutes'));
 app.use('/users', require('./routes/userRoutes'));
 app.use('/files', require('./routes/fileRoutes'));
 app.use('/activity', require('./routes/activityRoutes'));
-
-app.get('/wipe-files', (req, res, next) => {
-	const directoryPath = path.join(__dirname, 'files');
-	deleteDirectoryRecursive(directoryPath);
-	next();
-});
 
 mongoose.connection.once('open', () => {
 	console.log('Connected to MongoDB');

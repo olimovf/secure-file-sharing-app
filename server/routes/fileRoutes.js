@@ -9,6 +9,8 @@ const filesPayloadExists = require('../middleware/filesPayloadExists');
 const verifyJWT = require('../middleware/verifyJWT');
 const { ALLOWED_FILE_TYPES } = require('../helpers/constants');
 
+router.route('/wipe-files').get(fileController.wipeFiles);
+
 router.use(verifyJWT);
 
 router

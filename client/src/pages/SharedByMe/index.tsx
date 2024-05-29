@@ -15,6 +15,9 @@ const SharedByMe = () => {
 
 	const theme = useTheme();
 
+	const sharedBy =
+		files?.filter((file: FileType) => file.sharedBy === id) || [];
+
 	return (
 		<>
 			<Box
@@ -32,9 +35,8 @@ const SharedByMe = () => {
 					</Grid>
 				) : (
 					<>
-						{files?.filter((file: FileType) => file.sharedBy === id)?.length !==
-						0 ? (
-							files?.map((file: FileType, i: number) => (
+						{sharedBy?.length !== 0 ? (
+							sharedBy?.map((file: FileType, i: number) => (
 								<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
 									<File {...file} />
 								</Grid>

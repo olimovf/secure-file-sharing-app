@@ -1,4 +1,3 @@
-const fs = require('fs');
 const nodemailer = require('nodemailer');
 const Activity = require('../models/Activity');
 
@@ -72,23 +71,6 @@ const sendInvitationEmail = async (user) => {
 	transporter.sendMail(mailOptions);
 };
 
-const deleteDirectoryRecursive = (path) => {
-	if (fs.existsSync(path)) {
-		fs.readdirSync(path).forEach(function (file) {
-			const curPath = path + '/' + file;
-			if (fs.lstatSync(curPath).isDirectory()) {
-				deleteDirectoryRecursive(curPath);
-			} else {
-				fs.unlinkSync(curPath);
-			}
-		});
-		fs.rmdirSync(path);
-		console.log(`Directory ${path} deleted successfully.`);
-	} else {
-		console.log(`Directory ${path} does not exist.`);
-	}
-};
-
 const saveActivity = async ({ userId, action, status }) => {
 	const userIp = await fetch('https://api.ipify.org/?format=json').then(
 		(data) => data.json(),
@@ -102,6 +84,5 @@ module.exports = {
 	removeTimestampFromFileName,
 	sendVerificationEmail,
 	sendInvitationEmail,
-	deleteDirectoryRecursive,
 	saveActivity,
 };

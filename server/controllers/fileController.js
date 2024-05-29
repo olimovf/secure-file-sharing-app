@@ -301,10 +301,34 @@ const updateFile = asyncHandler(async (req, res) => {
 	res.json({ message: 'File updated successfully' });
 });
 
+const deleteDirectory = (path) => {
+	if (fs.existsSync(path)) {
+		fs.readdirSync(path).forEach(function (file) {
+			const curPath = path + '/' + file;
+			if (fs.lstatSync(curPath).isDirectory()) {
+				deleteDirectory(curPath);
+			} else {
+				fs.unlinkSync(curPath);
+			}
+		});
+		fs.rmdirSync(path);
+		console.log(`Requested directory deleted successfully.`);
+	} else {
+		console.log(`Requested directory does not exist.`);
+	}
+};
+
+const wipeFiles = asyncHandler(async (req, res) => {
+	const directoryPath = path.join(__dirname, '..', 'files');
+	deleteDirectory(directoryPath);
+	res.json({ message: 'Deleted all files stored in the server' });
+});
+
 module.exports = {
 	uploadFiles,
 	getFiles,
 	downloadFile,
 	deleteFile,
 	updateFile,
+	wipeFiles,
 };

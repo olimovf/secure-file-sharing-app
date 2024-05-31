@@ -74,7 +74,7 @@ const SharedWithMe = () => {
 						{sharedWith?.length !== 0 ? (
 							sharedWith?.map((file: FileType, index: number) => {
 								return view === 'list' ? (
-									<ListView key={index} file={file} />
+									<ListView key={index} file={file} isSharedBy={true} />
 								) : (
 									<GridView key={index} file={file} />
 								);

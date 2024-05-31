@@ -218,7 +218,7 @@ const deleteFile = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'File not found' });
 	}
 
-	if (userId === file.createdBy) await file.deleteOne().exec();
+	if (userId === file.createdBy.toString()) await file.deleteOne().exec();
 	else await file.updateOne({ sharedWith: null }).exec();
 
 	await saveActivity({

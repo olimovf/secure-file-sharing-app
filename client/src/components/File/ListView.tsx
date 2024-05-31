@@ -24,8 +24,18 @@ import {
 import notify from '../../utils/notify';
 import RenameFileModal from './RenameFileModal';
 import InfoFileModal from './InfoFileModal';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { useGetUsersQuery } from '../../features/users/usersApiSlice';
+dayjs.extend(utc);
 
-const ListView = ({ file: { _id, name, size } }: { file: FileType }) => {
+const ListView = ({
+	file: { _id, name, size, sharedBy, sharedWith, createdAt },
+	isSharedBy = false,
+}: {
+	file: FileType;
+	isSharedBy?: boolean;
+}) => {
 	const theme = useTheme();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -44,6 +54,7 @@ const ListView = ({ file: { _id, name, size } }: { file: FileType }) => {
 
 	const [deleteFile] = useDeleteFileMutation<MutationType>();
 	const [downloadFile] = useDownloadFileMutation<MutationType>();
+	const { data: users } = useGetUsersQuery('usersList', {});
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -98,10 +109,15 @@ const ListView = ({ file: { _id, name, size } }: { file: FileType }) => {
 				borderRadius={1}
 				py={1}
 				px={1.5}
-				display={'flex'}
-				justifyContent={'space-between'}
+				display={'grid'}
+				gridTemplateColumns={'2fr 1fr 1fr 0.6fr 60px'}
 				alignItems={'center'}
 				position={'relative'}
+				sx={{
+					[theme.breakpoints.down('md')]: {
+						gridTemplateColumns: 'auto 60px',
+					},
+				}}
 			>
 				<Box display={'flex'} gap={1} alignItems={'center'}>
 					<Avatar sx={{ bgcolor: theme.palette.primary.main }}>
@@ -111,22 +127,53 @@ const ListView = ({ file: { _id, name, size } }: { file: FileType }) => {
 					</Avatar>
 					<Typography>{name}</Typography>
 				</Box>
-				<IconButton
-					aria-label='file-actions'
-					aria-controls='file-actions-menu'
-					aria-haspopup='true'
-					onClick={handleClick}
+
+				<Box
 					sx={{
-						position: 'absolute',
-						top: '50%',
-						transform: 'translateY(-50%)',
-						right: 150,
+						[theme.breakpoints.down('md')]: {
+							display: 'none',
+						},
 					}}
 				>
-					<MoreVertIcon />
-				</IconButton>
-				<Box>
-					<Typography>{formatBytes(size)}</Typography>
+					<Typography textAlign={'right'} ml={1}>
+						{isSharedBy
+							? users?.find((user: UserType) => user._id === sharedBy)
+									?.firstName
+							: users?.find((user: UserType) => user._id === sharedWith)
+									?.firstName}
+					</Typography>
+				</Box>
+				<Box
+					sx={{
+						[theme.breakpoints.down('md')]: {
+							display: 'none',
+						},
+					}}
+				>
+					<Typography textAlign={'right'} ml={1}>
+						{dayjs(createdAt).utc(true).format('DD.MM.YYYY HH:mm')}
+					</Typography>
+				</Box>
+				<Box
+					sx={{
+						[theme.breakpoints.down('md')]: {
+							display: 'none',
+						},
+					}}
+				>
+					<Typography textAlign={'right'} ml={1}>
+						{formatBytes(size)}
+					</Typography>
+				</Box>
+				<Box textAlign={'right'} ml={1}>
+					<IconButton
+						aria-label='file-actions'
+						aria-controls='file-actions-menu'
+						aria-haspopup='true'
+						onClick={handleClick}
+					>
+						<MoreVertIcon />
+					</IconButton>
 				</Box>
 			</Box>
 			<Menu

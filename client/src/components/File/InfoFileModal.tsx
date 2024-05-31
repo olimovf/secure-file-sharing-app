@@ -68,7 +68,14 @@ const InfoFileModal = ({ fileId, open, setOpen }: InfoFileModalProps) => {
 			>
 				<CloseIcon />
 			</IconButton>
-			<DialogContent dividers sx={{ padding: '12px !important', width: 360 }}>
+			<DialogContent
+				dividers
+				sx={{
+					padding: '12px !important',
+					maxWidth: '100%',
+					width: 360,
+				}}
+			>
 				{Object.entries(info).map((entry, i) => (
 					<Box
 						key={i}

@@ -16,7 +16,7 @@ const ToggleThemeButton = () => {
 		<Wrapper>
 			<StyledIconButton onClick={toggleColorMode}>
 				{theme.palette.mode === 'dark' ? (
-					<Brightness4Icon />
+					<Brightness4Icon sx={{ transform: 'rotate(180deg)' }} />
 				) : (
 					<Brightness7Icon />
 				)}

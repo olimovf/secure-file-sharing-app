@@ -15,7 +15,7 @@ export const themeSettings = (mode: PaletteMode) => {
 							dark: '#1565c0',
 						},
 						secondary: {
-							main: '#9c27b0',
+							main: '#fff',
 							light: '#ba68c8',
 							dark: '#7b1fa2',
 						},
@@ -56,7 +56,7 @@ export const themeSettings = (mode: PaletteMode) => {
 							dark: '#42a5f5',
 						},
 						secondary: {
-							main: '#ce93d8',
+							main: '#252525',
 							light: '#f3e5f5',
 							dark: '#ab47bc',
 						},
@@ -99,49 +99,49 @@ export const themeSettings = (mode: PaletteMode) => {
 				fontFamily,
 				fontSize: fontSize * 4.5,
 				fontWeight: 300,
-				// "@media (max-width: 768px)": {
-				//   fontSize: fontSize * 2.8,
-				// },
+				'@media (max-width: 768px)': {
+					fontSize: fontSize * 2.8,
+				},
 			},
 			h2: {
 				fontFamily,
 				fontSize: fontSize * 3,
 				fontWeight: 300,
-				// "@media (max-width: 768px)": {
-				//   fontSize: fontSize * 2,
-				// },
+				'@media (max-width: 768px)': {
+					fontSize: fontSize * 2,
+				},
 			},
 			h3: {
 				fontFamily,
 				fontSize: fontSize * 2.5,
 				fontWeight: 400,
-				// "@media (max-width: 768px)": {
-				//   fontSize: fontSize * 1.75,
-				// },
+				'@media (max-width: 768px)': {
+					fontSize: fontSize * 1.75,
+				},
 			},
 			h4: {
 				fontFamily,
 				fontSize: fontSize * 2,
 				fontWeight: 400,
-				// "@media (max-width: 768px)": {
-				//   fontSize: fontSize * 1.45,
-				// },
+				'@media (max-width: 768px)': {
+					fontSize: fontSize * 1.45,
+				},
 			},
 			h5: {
 				fontFamily,
 				fontSize: fontSize * 1.5,
 				fontWeight: 500,
-				// "@media (max-width: 768px)": {
-				//   fontSize: fontSize * 1.3,
-				// },
+				'@media (max-width: 768px)': {
+					fontSize: fontSize * 1.3,
+				},
 			},
 			h6: {
 				fontFamily,
 				fontSize: fontSize * 1.2,
 				fontWeight: 500,
-				// "@media (max-width: 768px)": {
-				//   fontSize: fontSize * 1.15,
-				// },
+				'@media (max-width: 768px)': {
+					fontSize: fontSize * 1,
+				},
 			},
 			subtitle1: {
 				fontFamily,

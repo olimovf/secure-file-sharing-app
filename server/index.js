@@ -6,6 +6,7 @@ const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
 const connectDB = require('./config/dbConn');
 const mongoose = require('mongoose');
+const mongoSanitize = require('express-mongo-sanitize');
 const PORT = process.env.PORT || 3500;
 
 require('./cron/index');
@@ -17,6 +18,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use(cookieParser());
+
+app.use(mongoSanitize());
 
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/users', require('./routes/userRoutes'));

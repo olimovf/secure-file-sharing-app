@@ -1,9 +1,20 @@
-import { Grid, Box, Typography, useTheme } from '@mui/material';
+import {
+	Grid,
+	Box,
+	Typography,
+	useTheme,
+	ToggleButtonGroup,
+	ToggleButton,
+} from '@mui/material';
 import { useGetFilesQuery } from '../../features/file/fileApiSlice';
-import File from '../../components/File';
 import { PulseLoader } from 'react-spinners';
 import useAuth from '../../hooks/useAuth';
 import useTitle from '../../hooks/useTitle';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import React, { useState } from 'react';
+import ListView from '../../components/File/ListView';
+import GridView from '../../components/File/GridView';
 
 const SharedByMe = () => {
 	useTitle('Files shared by me');
@@ -12,6 +23,17 @@ const SharedByMe = () => {
 		'filesList',
 		{},
 	);
+
+	const [view, setView] = useState<string>('list');
+
+	const handleViewChange = (
+		_: React.MouseEvent<HTMLElement>,
+		nextView: string | null,
+	) => {
+		if (nextView !== null) {
+			setView(nextView);
+		}
+	};
 
 	const theme = useTheme();
 
@@ -27,8 +49,22 @@ const SharedByMe = () => {
 				sx={{ mb: 2 }}
 			>
 				<Typography variant='h4'>Shared by me</Typography>
+				<ToggleButtonGroup
+					value={view}
+					color='primary'
+					exclusive
+					size={'small'}
+					onChange={handleViewChange}
+				>
+					<ToggleButton value='list' aria-label='list' sx={{ p: 0.5 }}>
+						<ViewListIcon fontSize='small' />
+					</ToggleButton>
+					<ToggleButton value='grid' aria-label='grid' sx={{ p: 0.5 }}>
+						<ViewModuleIcon fontSize='small' />
+					</ToggleButton>
+				</ToggleButtonGroup>
 			</Box>
-			<Grid container spacing={2}>
+			<Grid container spacing={view === 'list' ? 1 : 2}>
 				{filesLoading ? (
 					<Grid item xs={12}>
 						<PulseLoader color={theme.palette.primary.main} />
@@ -36,11 +72,13 @@ const SharedByMe = () => {
 				) : (
 					<>
 						{sharedBy?.length !== 0 ? (
-							sharedBy?.map((file: FileType, i: number) => (
-								<Grid key={i} item xs={12} sm={6} md={4} lg={3}>
-									<File {...file} />
-								</Grid>
-							))
+							sharedBy.map((file: FileType, index: number) => {
+								return view === 'list' ? (
+									<ListView key={index} file={file} />
+								) : (
+									<GridView key={index} file={file} />
+								);
+							})
 						) : (
 							<Grid item xs={12}>
 								<Typography align='center' pb={2} variant='subtitle1'>

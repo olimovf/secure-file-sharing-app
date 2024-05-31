@@ -1,30 +1,33 @@
-import { useEffect, useState } from 'react';
 import {
-	Card,
+	Avatar,
+	Box,
+	Grid,
 	IconButton,
+	ListItemIcon,
 	Menu,
 	MenuItem,
 	Typography,
-	ListItemIcon,
 	useTheme,
 } from '@mui/material';
+import { fileIcons, formatBytes } from '../../utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
-import { FileName, StyledCardContent, StyledCardMedia } from './style';
+import { useState, useEffect } from 'react';
 import {
 	useDeleteFileMutation,
 	useDownloadFileMutation,
 } from '../../features/file/fileApiSlice';
-import RenameFileModal from './RenameFileModal';
 import notify from '../../utils/notify';
+import RenameFileModal from './RenameFileModal';
 import InfoFileModal from './InfoFileModal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fileIcons } from '../../utils';
 
-const File = ({ _id, name }: FileType) => {
+const ListView = ({ file: { _id, name, size } }: { file: FileType }) => {
+	const theme = useTheme();
+
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [fileState, setFileState] = useState<{
 		isRenaming: boolean;
@@ -88,29 +91,44 @@ const File = ({ _id, name }: FileType) => {
 		setIsInfoFileOpen(true);
 	};
 
-	const theme = useTheme();
-
 	return (
-		<Card sx={{ p: 1.5 }}>
-			<StyledCardMedia>
-				<FontAwesomeIcon
-					color={theme.palette.primary.main}
-					fontSize={'84px'}
-					icon={fileIcons(name.slice(name.lastIndexOf('.')))}
-				/>
+		<Grid item xs={12}>
+			<Box
+				bgcolor={theme.palette.secondary.main}
+				borderRadius={1}
+				py={1}
+				px={1.5}
+				display={'flex'}
+				justifyContent={'space-between'}
+				alignItems={'center'}
+				position={'relative'}
+			>
+				<Box display={'flex'} gap={1} alignItems={'center'}>
+					<Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+						<FontAwesomeIcon
+							icon={fileIcons(name.slice(name.lastIndexOf('.')))}
+						/>
+					</Avatar>
+					<Typography>{name}</Typography>
+				</Box>
 				<IconButton
 					aria-label='file-actions'
 					aria-controls='file-actions-menu'
 					aria-haspopup='true'
 					onClick={handleClick}
-					sx={{ position: 'absolute', top: 0, right: 0 }}
+					sx={{
+						position: 'absolute',
+						top: '50%',
+						transform: 'translateY(-50%)',
+						right: 150,
+					}}
 				>
 					<MoreVertIcon />
 				</IconButton>
-			</StyledCardMedia>
-			<StyledCardContent>
-				<FileName variant='body1'>{name}</FileName>
-			</StyledCardContent>
+				<Box>
+					<Typography>{formatBytes(size)}</Typography>
+				</Box>
+			</Box>
 			<Menu
 				id='file-actions-menu'
 				anchorEl={anchorEl}
@@ -153,8 +171,8 @@ const File = ({ _id, name }: FileType) => {
 				setOpen={setIsInfoFileOpen}
 				fileId={_id}
 			/>
-		</Card>
+		</Grid>
 	);
 };
 
-export default File;
+export default ListView;

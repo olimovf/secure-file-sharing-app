@@ -16,8 +16,7 @@ import {
 	ListItemText,
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
-import FileIcon from '@mui/icons-material/Description';
-import { formatBytes } from '../../utils';
+import { fileIcons, formatBytes } from '../../utils';
 import { useGetUsersQuery } from '../../features/users/usersApiSlice';
 import useAuth from '../../hooks/useAuth';
 import { useState } from 'react';
@@ -25,6 +24,7 @@ import notify from '../../utils/notify';
 import { useUploadFilesMutation } from '../../features/file/fileApiSlice';
 import { acceptedFileTypes } from '../../utils/constants';
 import useTitle from '../../hooks/useTitle';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Home = () => {
 	useTitle('Share files');
@@ -95,14 +95,27 @@ const Home = () => {
 				<Grid item xs={12} lg={8}>
 					<Card>
 						<CardContent>
-							<Box display={'flex'} alignItems={'center'} gap={1}>
-								<Typography variant='h6' gutterBottom>
-									File type:
-								</Typography>
-								<Typography variant='body1' gutterBottom fontStyle={'italic'}>
-									{acceptedFileTypes.join(', ')}
-								</Typography>
+							<Box
+								display={'flex'}
+								justifyContent={'space-between'}
+								gap={1}
+								flexWrap={'wrap'}
+								mb={1}
+							>
+								<Box display={'flex'} alignItems={'center'} gap={1}>
+									<Typography variant='h6'>File type:</Typography>
+									<Typography variant='body1' fontStyle={'italic'}>
+										{acceptedFileTypes.join(', ')}
+									</Typography>
+								</Box>
+								<Box display={'flex'} alignItems={'center'} gap={1}>
+									<Typography variant='h6'>Max file size:</Typography>
+									<Typography variant='body1' fontStyle={'italic'}>
+										5 MB
+									</Typography>
+								</Box>
 							</Box>
+
 							<Divider />
 							<Box
 								{...getRootProps()}
@@ -136,8 +149,12 @@ const Home = () => {
 										secondaryAction={formatBytes(file.size)}
 									>
 										<ListItemAvatar>
-											<Avatar sx={{ bgcolor: theme.palette.primary.light }}>
-												<FileIcon />
+											<Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+												<FontAwesomeIcon
+													icon={fileIcons(
+														file.name.slice(file.name.lastIndexOf('.')),
+													)}
+												/>
 											</Avatar>
 										</ListItemAvatar>
 										<ListItemText primary={file.name} />

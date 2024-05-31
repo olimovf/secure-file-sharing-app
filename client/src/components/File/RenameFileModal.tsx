@@ -68,7 +68,10 @@ const RenameFileModal = ({
 				<CloseIcon />
 			</IconButton>
 			<DialogContent dividers sx={{ padding: '12px !important' }}>
-				<FormControl sx={{ m: 1, width: 320 }} variant='outlined'>
+				<FormControl
+					sx={{ p: 1, width: 320, maxWidth: '100%' }}
+					variant='outlined'
+				>
 					<Typography
 						component={'label'}
 						htmlFor='newName'

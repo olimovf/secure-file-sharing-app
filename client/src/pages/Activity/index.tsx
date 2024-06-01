@@ -41,7 +41,7 @@ const Activity = () => {
 		if (roles.includes(ROLES.admin)) {
 			return {
 				...obj,
-				user: users.find((user: UserType) => user._id === act.userId)
+				user: users?.find((user: UserType) => user._id === act.userId)
 					?.firstName,
 			};
 		}

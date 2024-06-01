@@ -137,9 +137,9 @@ const ListView = ({
 				>
 					<Typography textAlign={'right'} ml={1}>
 						{isSharedBy
-							? users?.find((user: UserType) => user._id === sharedBy)
+							? users?.find((user: UserType) => user._id === sharedWith)
 									?.firstName
-							: users?.find((user: UserType) => user._id === sharedWith)
+							: users?.find((user: UserType) => user._id === sharedBy)
 									?.firstName}
 					</Typography>
 				</Box>

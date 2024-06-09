@@ -163,7 +163,8 @@ const Profile = () => {
 					/>
 				</div>
 
-				<div>
+				{roles.includes(ROLES.admin) && (
+					<div>
 					<Typography
 						component={'label'}
 						htmlFor='roles'
@@ -199,6 +200,7 @@ const Profile = () => {
 						)}
 					/>
 				</div>
+				)}
 
 				<div>
 					<Typography

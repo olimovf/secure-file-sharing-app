@@ -49,6 +49,7 @@ export const AppBar = styled(MuiAppBar, {
 	}),
 	...(open && {
 		marginLeft: drawerWidth,
+		zIndex: theme.zIndex.drawer - 1,
 		width: `calc(100% - ${drawerWidth}px)`,
 		transition: theme.transitions.create(['width', 'margin'], {
 			easing: theme.transitions.easing.sharp,

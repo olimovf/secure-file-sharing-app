@@ -15,7 +15,11 @@ const {
 } = require('../helpers/encryption');
 const KMS = require('../models/KMS');
 const { setDHParams } = require('../helpers/dh');
-const { MAX_FILE_NAME_LENGTH, ENCODING_TYPE } = require('../helpers/constants');
+const {
+	MAX_FILE_NAME_LENGTH,
+	ENCODING_TYPE,
+	MIME_TYPES,
+} = require('../helpers/constants');
 const User = require('../models/User');
 
 // @desc File upload
@@ -185,6 +189,12 @@ const downloadFile = asyncHandler(async (req, res) => {
 		action: 'DOWNLOAD FILE',
 		status: 'SUCCESS ✅',
 	});
+
+	const fileExtName = path.extname(filePath).toLowerCase();
+	const mimeType = MIME_TYPES[fileExtName];
+
+	res.setHeader('Content-Type', mimeType);
+	res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
 
 	res.end(buffer);
 });

@@ -119,13 +119,24 @@ const ListView = ({
 					},
 				}}
 			>
-				<Box display={'flex'} gap={1} alignItems={'center'}>
+				<Box display={'flex'} gap={1} alignItems={'center'} width={'100%'}>
 					<Avatar sx={{ bgcolor: theme.palette.primary.main }}>
 						<FontAwesomeIcon
 							icon={fileIcons(name.slice(name.lastIndexOf('.')))}
 						/>
 					</Avatar>
-					<Typography>{name}</Typography>
+					<Typography
+						sx={{
+							width: '100%',
+							display: '-webkit-box',
+							WebkitBoxOrient: 'vertical',
+							WebkitLineClamp: 1,
+							overflow: 'hidden',
+							wordBreak: 'break-all',
+						}}
+					>
+						{name}
+					</Typography>
 				</Box>
 
 				<Box

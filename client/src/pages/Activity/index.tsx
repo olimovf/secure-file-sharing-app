@@ -101,7 +101,19 @@ const Activity = () => {
 		<Box>
 			<Typography variant='h4'>Activity</Typography>
 
-			<Box sx={{ width: '100%', mt: 2 }}>
+			<Box
+				sx={{
+					width: '100%',
+					overflowX: 'none',
+					mt: 2,
+					[theme.breakpoints.down('md')]: {
+						overflowX: 'auto',
+						'&::-webkit-scrollbar': {
+							display: 'none',
+						},
+					},
+				}}
+			>
 				{actsLoading ? (
 					<PulseLoader color={theme.palette.primary.main} />
 				) : (
@@ -118,6 +130,10 @@ const Activity = () => {
 						pageSizeOptions={[5]}
 						disableRowSelectionOnClick
 						sx={{
+							width: '100%',
+							[theme.breakpoints.down('md')]: {
+								width: 750,
+							},
 							border: `1px solid ${theme.palette.info.dark}`,
 							'& .MuiDataGrid-row': {
 								borderBottom: `1px solid ${theme.palette.info.dark}`,
